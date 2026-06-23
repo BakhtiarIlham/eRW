@@ -58,11 +58,27 @@ def _init():
     ]
 
     # ── Laporan ──────────────────────────────────────────────────────────────
+    # Catatan: "lampiran" menyimpan metadata file yang diupload warga (simulasi,
+    # bukan file fisik) -> {"nama_file", "ukuran_kb", "tipe"} atau None.
     st.session_state["laporan"] = [
-        {"id": 1, "id_warga": 1, "nama": "Dewi Lestari",    "judul": "Lampu Jalan Mati",     "deskripsi": "Lampu jalan di depan RT 02 sudah mati sejak 3 hari lalu dan sangat berbahaya pada malam hari.", "tanggal": str(today - timedelta(days=3)), "status": "Selesai",    "petugas": "Ahmad Fauzi",  "catatan": "Lampu telah diganti."},
-        {"id": 2, "id_warga": 2, "nama": "Eko Prasetyo",    "judul": "Got Tersumbat",         "deskripsi": "Saluran air di Jl. Anggrek RT 01 tersumbat sampah sehingga menyebabkan banjir kecil saat hujan.", "tanggal": str(today - timedelta(days=6)), "status": "Diproses",   "petugas": "Ahmad Fauzi",  "catatan": "Sedang dalam penanganan."},
-        {"id": 3, "id_warga": 3, "nama": "Fitri Handayani", "judul": "Fasilitas Taman Rusak", "deskripsi": "Beberapa bangku taman di area RT 03 sudah rusak dan perlu diperbaiki.", "tanggal": str(today - timedelta(days=1)), "status": "Diverifikasi", "petugas": "",             "catatan": ""},
-        {"id": 4, "id_warga": 6, "nama": "Irwan Kusuma",    "judul": "Keamanan Lingkungan",   "deskripsi": "Terdapat orang asing yang mencurigakan berkeliaran di sekitar RT 04 pada malam hari.", "tanggal": str(today), "status": "Menunggu",    "petugas": "",             "catatan": ""},
+        {"id": 1, "id_warga": 1, "nama": "Dewi Lestari",    "judul": "Lampu Jalan Mati",     "deskripsi": "Lampu jalan di depan RT 02 sudah mati sejak 3 hari lalu dan sangat berbahaya pada malam hari.", "tanggal": str(today - timedelta(days=3)), "status": "Selesai",    "petugas": "Ahmad Fauzi",  "catatan": "Lampu telah diganti.", "lampiran": {"nama_file": "foto_lampu_mati.jpg", "ukuran_kb": 842, "tipe": "image/jpeg"}, "riwayat": [
+            {"status": "Menunggu", "tanggal": str(today - timedelta(days=3)), "oleh": "Dewi Lestari"},
+            {"status": "Diverifikasi", "tanggal": str(today - timedelta(days=2)), "oleh": "Budi Santoso"},
+            {"status": "Diproses", "tanggal": str(today - timedelta(days=2)), "oleh": "Ahmad Fauzi"},
+            {"status": "Selesai", "tanggal": str(today - timedelta(days=1)), "oleh": "Ahmad Fauzi"},
+        ]},
+        {"id": 2, "id_warga": 2, "nama": "Eko Prasetyo",    "judul": "Got Tersumbat",         "deskripsi": "Saluran air di Jl. Anggrek RT 01 tersumbat sampah sehingga menyebabkan banjir kecil saat hujan.", "tanggal": str(today - timedelta(days=6)), "status": "Diproses",   "petugas": "Ahmad Fauzi",  "catatan": "Sedang dalam penanganan.", "lampiran": {"nama_file": "got_tersumbat.png", "ukuran_kb": 1230, "tipe": "image/png"}, "riwayat": [
+            {"status": "Menunggu", "tanggal": str(today - timedelta(days=6)), "oleh": "Eko Prasetyo"},
+            {"status": "Diverifikasi", "tanggal": str(today - timedelta(days=5)), "oleh": "Siti Rahayu"},
+            {"status": "Diproses", "tanggal": str(today - timedelta(days=4)), "oleh": "Ahmad Fauzi"},
+        ]},
+        {"id": 3, "id_warga": 3, "nama": "Fitri Handayani", "judul": "Fasilitas Taman Rusak", "deskripsi": "Beberapa bangku taman di area RT 03 sudah rusak dan perlu diperbaiki.", "tanggal": str(today - timedelta(days=1)), "status": "Diverifikasi", "petugas": "",             "catatan": "", "lampiran": None, "riwayat": [
+            {"status": "Menunggu", "tanggal": str(today - timedelta(days=1)), "oleh": "Fitri Handayani"},
+            {"status": "Diverifikasi", "tanggal": str(today), "oleh": "Budi Santoso"},
+        ]},
+        {"id": 4, "id_warga": 6, "nama": "Irwan Kusuma",    "judul": "Keamanan Lingkungan",   "deskripsi": "Terdapat orang asing yang mencurigakan berkeliaran di sekitar RT 04 pada malam hari.", "tanggal": str(today), "status": "Menunggu",    "petugas": "",             "catatan": "", "lampiran": None, "riwayat": [
+            {"status": "Menunggu", "tanggal": str(today), "oleh": "Irwan Kusuma"},
+        ]},
     ]
 
     st.session_state["data_initialized"] = True
@@ -75,3 +91,30 @@ def get(key):
 
 def set_data(key, value):
     st.session_state[key] = value
+
+
+# ── Helper lintas-modul (dipakai untuk fitur detail interaktif) ─────────────
+def get_warga_by_id(id_warga):
+    """Ambil satu data warga berdasarkan id. Mengembalikan None jika tidak ada."""
+    for w in get("warga"):
+        if w["id"] == id_warga:
+            return w
+    return None
+
+
+def get_warga_by_nama(nama):
+    """Ambil satu data warga berdasarkan nama (untuk akun login warga)."""
+    for w in get("warga"):
+        if w["nama"] == nama:
+            return w
+    return None
+
+
+def get_riwayat_warga(id_warga):
+    """Kumpulkan seluruh riwayat (kas, bansos, laporan) milik satu warga,
+    dipakai pada halaman detail warga."""
+    return {
+        "kas":     [k for k in get("kas") if k["id_warga"] == id_warga],
+        "bansos":  [b for b in get("bansos") if b["id_warga"] == id_warga],
+        "laporan": [l for l in get("laporan") if l["id_warga"] == id_warga],
+    }

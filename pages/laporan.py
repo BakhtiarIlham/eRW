@@ -49,6 +49,7 @@ def render():
                     {f"&nbsp;·&nbsp; 🔧 {l['petugas']}" if l.get('petugas') else ''}
                   </div>
                   <div style="font-size:0.87rem; color:#374151;">{l['deskripsi']}</div>
+                  {f"<div style='font-size:0.8rem;color:#2563EB;'>📎 {l['lampiran']}</div>" if l.get('lampiran') else ""}
                   {f"<div style='margin-top:6px; font-size:0.83rem; color:#059669; background:#ECFDF5; padding:4px 8px; border-radius:6px; display:inline-block;'>📝 {l['catatan']}</div>" if l.get('catatan') else ''}
                 </div>
               </div>
