@@ -53,6 +53,7 @@ def render():
                 <div>
                   <span style="font-weight:700; color:#1E3A8A; font-size:1rem;">{l['judul']}</span>
                   <span class="badge {badge_cls}" style="margin-left:8px;">{l['status']}</span>
+                  {f'<span class="badge badge-blue" style="margin-left:6px;">📎 Ada Lampiran</span>' if l.get('lampiran') else ''}
                 </div>
                 <div style="font-size:0.78rem; color:#9CA3AF;">📅 {l['tanggal']}</div>
               </div>
@@ -63,3 +64,10 @@ def render():
             </div>""",
             unsafe_allow_html=True,
         )
+        col_d, _ = st.columns([1.6, 5])
+        with col_d:
+            if st.button("🔍 Lihat Detail & Kronologi", key=f"detail_sl_{l['id']}"):
+                st.session_state["detail_laporan_id"] = l["id"]
+                st.session_state["detail_laporan_back"] = "status_laporan"
+                st.session_state["current_page"] = "detail_laporan"
+                st.rerun()

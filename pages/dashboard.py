@@ -16,6 +16,21 @@ def metric_card(icon, label, value, color="#EEF2FF", icon_bg="#C7D2FE"):
     """
 
 
+def render_card(title, subtitle, meta, badge_cls):
+    return f"""
+    <div class='panel-card-sm'>
+      <div class='panel-card-title'>{title}</div>
+      <div class='panel-card-text'>{subtitle}</div>
+      <div class='panel-card-meta'>{meta}</div>
+      <div style='margin-top:0.8rem; text-align:right;'>
+        <span class='badge {badge_cls}' style='font-size:0.8rem; padding:0.45rem 0.9rem;'>
+          {badge_cls.replace('badge-','').capitalize()}
+        </span>
+      </div>
+    </div>
+    """
+
+
 def render():
     user = st.session_state.get("user", {})
     role = user.get("role", "")
@@ -56,47 +71,53 @@ def render():
         col_l, col_r = st.columns([3, 2])
 
         with col_l:
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown('<div class="section-title">📋 Laporan Terbaru</div><br>', unsafe_allow_html=True)
-            rows = ""
-            for l in laporan_list[-4:][::-1]:
-                badge_cls = {"Selesai":"badge-green","Diproses":"badge-blue","Diverifikasi":"badge-yellow","Menunggu":"badge-gray"}.get(l["status"],"badge-gray")
-                rows += f"""<tr>
-                  <td>{l['nama']}</td>
-                  <td>{l['judul']}</td>
-                  <td>{l['tanggal']}</td>
-                  <td><span class="badge {badge_cls}">{l['status']}</span></td>
-                </tr>"""
-            st.markdown(
-                f"""<table class="styled-table"><thead><tr>
-                  <th>Nama</th><th>Judul</th><th>Tanggal</th><th>Status</th>
-                </tr></thead><tbody>{rows}</tbody></table>""",
-                unsafe_allow_html=True,
-            )
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown("<div class='section-heading'>📋 Laporan Terbaru</div>", unsafe_allow_html=True)
+            recent = laporan_list[-4:][::-1]
+            if recent:
+                for l in recent:
+                    badge_cls = {"Selesai":"badge-green","Diproses":"badge-blue","Diverifikasi":"badge-yellow","Menunggu":"badge-gray"}.get(l["status"],"badge-gray")
+                    st.markdown(
+                        render_card(
+                            title=f"{l['nama']}",
+                            subtitle=l['judul'],
+                            meta=f"📅 {l['tanggal']}",
+                            badge_cls=badge_cls,
+                        ),
+                        unsafe_allow_html=True,
+                    )
+                    if st.button("🔍", key=f"dash_rw_lap_{l['id']}", help="Lihat Detail"):
+                        st.session_state["detail_laporan_id"] = l["id"]
+                        st.session_state["detail_laporan_back"] = "dashboard"
+                        st.session_state["current_page"] = "detail_laporan"
+                        st.rerun()
+            else:
+                st.info("📭 Belum ada laporan.")
 
         with col_r:
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown('<div class="section-title">📢 Pengumuman Terbaru</div><br>', unsafe_allow_html=True)
-            for p in pengumuman[-3:][::-1]:
-                st.markdown(
-                    f"""<div style="border-left:3px solid #3B82F6; padding:6px 10px; margin-bottom:10px; border-radius:4px; background:#F9FAFB;">
-                      <div style="font-weight:600; font-size:0.87rem; color:#1E3A8A;">{p['judul']}</div>
-                      <div style="font-size:0.76rem; color:#9CA3AF;">{p['tanggal']} · {p['oleh']}</div>
-                    </div>""",
-                    unsafe_allow_html=True,
-                )
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown("<div class='section-heading'>📢 Pengumuman Terbaru</div>", unsafe_allow_html=True)
+            if pengumuman:
+                for p in pengumuman[-3:][::-1]:
+                    st.markdown(
+                        f"""<div class='panel-card-sm'>
+                              <div class='panel-card-title'>{p['judul']}</div>
+                              <div class='panel-card-text'>{p['isi'][:120] + ('…' if len(p['isi']) > 120 else '')}</div>
+                              <div class='panel-card-meta'>📅 {p['tanggal']} • {p['oleh']}</div>
+                            </div>""",
+                        unsafe_allow_html=True,
+                    )
+            else:
+                st.info("📭 Belum ada pengumuman.")
 
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown('<div class="section-title">🎁 Bansos Aktif</div><br>', unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("<div class='section-heading'>🎁 Bansos Aktif</div>", unsafe_allow_html=True)
             aktif_b = sum(1 for b in bansos_list if b["status"] == "Aktif")
             st.markdown(
-                f'<div style="font-size:2rem; font-weight:700; color:#1E3A8A; text-align:center;">{aktif_b}</div>'
-                '<div style="text-align:center; color:#6B7280; font-size:0.85rem;">dari {total_bansos} penerima</div>'.format(total_bansos=total_bansos),
+                f"""<div class='panel-card-sm'>
+                      <div class='panel-card-title'>Status Bansos</div>
+                      <div class='panel-card-text'>Aktif: <strong>{aktif_b}</strong> dari <strong>{total_bansos}</strong> penerima</div>
+                    </div>""",
                 unsafe_allow_html=True,
             )
-            st.markdown('</div>', unsafe_allow_html=True)
 
     # ══════════════════════════════════════════════════════════════════════════
     # PENGURUS RT
@@ -111,18 +132,25 @@ def render():
         c3.markdown(metric_card("📢", "Pengumuman Aktif",  len(pengumuman),   "#EEF2FF", "#C7D2FE"), unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">⏳ Warga Menunggu Validasi</div><br>', unsafe_allow_html=True)
-        rows = ""
-        for w in [x for x in warga_list if x["validasi"] == "Menunggu"]:
-            rows += f"<tr><td>{w['nik']}</td><td>{w['nama']}</td><td>{w['alamat']}</td><td><span class='badge badge-yellow'>Menunggu</span></td></tr>"
-        if not rows:
-            rows = "<tr><td colspan='4' style='text-align:center;color:#9CA3AF;'>Tidak ada data menunggu validasi</td></tr>"
-        st.markdown(
-            f"""<table class="styled-table"><thead><tr><th>NIK</th><th>Nama</th><th>Alamat</th><th>Status</th></tr></thead><tbody>{rows}</tbody></table>""",
-            unsafe_allow_html=True,
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.subheader("⏳ Warga Menunggu Validasi")
+        pending_w = [x for x in warga_list if x["validasi"] == "Menunggu"]
+        if pending_w:
+            for idx, w in enumerate(pending_w):
+                c1, c2, c3 = st.columns([3.5, 1, 1])
+                with c1:
+                    st.write(f"**{w['nama']}**")
+                    st.caption(f"🪪 {w['nik']} • 🏠 {w['alamat']}")
+                with c2:
+                    st.markdown('<span class="badge badge-yellow">Menunggu</span>', unsafe_allow_html=True)
+                with c3:
+                    if st.button("🔍", key=f"dash_rt_warga_{w['id']}", help="Lihat Detail"):
+                        st.session_state["detail_warga_id"] = w["id"]
+                        st.session_state["current_page"] = "detail_warga"
+                        st.rerun()
+                if idx < len(pending_w) - 1:
+                    st.divider()
+        else:
+            st.info("✅ Tidak ada data menunggu validasi.")
 
     # ══════════════════════════════════════════════════════════════════════════
     # PETUGAS OPERASIONAL
@@ -138,27 +166,36 @@ def render():
         c3.markdown(metric_card("✅", "Selesai",           len(lap_selesai),  "#ECFDF5", "#A7F3D0"), unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">📬 Laporan Yang Perlu Ditindaklanjuti</div><br>', unsafe_allow_html=True)
-        rows = ""
-        for l in (lap_verified + lap_diproses):
-            badge_cls = "badge-blue" if l["status"] == "Diproses" else "badge-yellow"
-            rows += f"<tr><td>{l['nama']}</td><td>{l['judul']}</td><td>{l['tanggal']}</td><td><span class='badge {badge_cls}'>{l['status']}</span></td></tr>"
-        if not rows:
-            rows = "<tr><td colspan='4' style='text-align:center;color:#9CA3AF;'>Tidak ada laporan menunggu</td></tr>"
-        st.markdown(
-            f"""<table class="styled-table"><thead><tr><th>Pelapor</th><th>Judul</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>{rows}</tbody></table>""",
-            unsafe_allow_html=True,
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.subheader("📬 Laporan Yang Perlu Ditindaklanjuti")
+        antrian = lap_verified + lap_diproses
+        if antrian:
+            for idx, l in enumerate(antrian):
+                badge_cls = "badge-blue" if l["status"] == "Diproses" else "badge-yellow"
+                c1, c2, c3 = st.columns([4, 1, 1])
+                with c1:
+                    st.write(f"**{l['nama']}** — {l['judul']}")
+                    st.caption(f"📅 {l['tanggal']}")
+                with c2:
+                    st.markdown(f'<span class="badge {badge_cls}">{l["status"]}</span>', unsafe_allow_html=True)
+                with c3:
+                    if st.button("🔍", key=f"dash_pet_lap_{l['id']}", help="Lihat Detail"):
+                        st.session_state["detail_laporan_id"] = l["id"]
+                        st.session_state["detail_laporan_back"] = "dashboard"
+                        st.session_state["current_page"] = "detail_laporan"
+                        st.rerun()
+                if idx < len(antrian) - 1:
+                    st.divider()
+        else:
+            st.info("✅ Tidak ada laporan menunggu.")
 
     # ══════════════════════════════════════════════════════════════════════════
     # WARGA
     # ══════════════════════════════════════════════════════════════════════════
     elif role == "Warga":
-        kas_warga     = [k for k in kas_list if k["id_warga"] == 1]
-        bansos_warga  = [b for b in bansos_list if b["id_warga"] == 1]
-        laporan_warga = [l for l in laporan_list if l["id_warga"] == 1]
+        w_self        = ds.get_warga_by_nama(nama) or {"id": 1}
+        kas_warga     = [k for k in kas_list if k["id_warga"] == w_self["id"]]
+        bansos_warga  = [b for b in bansos_list if b["id_warga"] == w_self["id"]]
+        laporan_warga = [l for l in laporan_list if l["id_warga"] == w_self["id"]]
         status_kas    = kas_warga[-1]["status"] if kas_warga else "Belum Ada"
 
         c1, c2, c3 = st.columns(3)
@@ -170,32 +207,36 @@ def render():
         col_l, col_r = st.columns([3, 2])
 
         with col_l:
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown('<div class="section-title">📢 Pengumuman Terbaru</div><br>', unsafe_allow_html=True)
-            for p in pengumuman[:3]:
-                st.markdown(
-                    f"""<div style="border-left:3px solid #3B82F6; padding:8px 12px; margin-bottom:12px; border-radius:4px; background:#F9FAFB;">
-                      <div style="font-weight:600; color:#1E3A8A; font-size:0.9rem;">{p['judul']}</div>
-                      <div style="font-size:0.8rem; color:#6B7280; margin-top:3px;">{p['isi'][:80]}…</div>
-                      <div style="font-size:0.72rem; color:#9CA3AF; margin-top:4px;">{p['tanggal']}</div>
-                    </div>""",
-                    unsafe_allow_html=True,
-                )
-            st.markdown('</div>', unsafe_allow_html=True)
-
-        with col_r:
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown('<div class="section-title">📋 Status Laporan Saya</div><br>', unsafe_allow_html=True)
-            if laporan_warga:
-                for l in laporan_warga:
-                    badge_cls = {"Selesai":"badge-green","Diproses":"badge-blue","Diverifikasi":"badge-yellow","Menunggu":"badge-gray"}.get(l["status"],"badge-gray")
+            st.subheader("📢 Pengumuman Terbaru")
+            if pengumuman:
+                for p in pengumuman[:3]:
                     st.markdown(
-                        f"""<div style="padding:8px 0; border-bottom:1px solid #F3F4F6;">
-                          <div style="font-weight:500; font-size:0.88rem;">{l['judul']}</div>
-                          <div style="margin-top:4px;"><span class="badge {badge_cls}">{l['status']}</span></div>
+                        f"""<div style="border-left:4px solid #3B82F6; padding:8px 12px; margin-bottom:10px; border-radius:4px; background:#F9FAFB;">
+                          <div style="font-weight:600; color:#1E3A8A; font-size:0.9rem;">{p['judul']}</div>
+                          <div style="font-size:0.8rem; color:#6B7280; margin-top:3px;">{p['isi'][:80] if len(p['isi']) > 80 else p['isi']}{'…' if len(p['isi']) > 80 else ''}</div>
+                          <div style="font-size:0.72rem; color:#9CA3AF; margin-top:4px;">{p['tanggal']}</div>
                         </div>""",
                         unsafe_allow_html=True,
                     )
             else:
-                st.markdown('<p style="color:#9CA3AF; font-size:0.85rem;">Belum ada laporan.</p>', unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+                st.info("📭 Belum ada pengumuman.")
+
+        with col_r:
+            st.subheader("📋 Status Laporan Saya")
+            if laporan_warga:
+                for idx, l in enumerate(laporan_warga[::-1]):
+                    badge_cls = {"Selesai":"badge-green","Diproses":"badge-blue","Diverifikasi":"badge-yellow","Menunggu":"badge-gray"}.get(l["status"],"badge-gray")
+                    c1, c2 = st.columns([3, 1])
+                    with c1:
+                        st.write(f"**{l['judul']}**")
+                        st.markdown(f'<span class="badge {badge_cls}">{l["status"]}</span>', unsafe_allow_html=True)
+                    with c2:
+                        if st.button("🔍", key=f"dash_warga_lap_{l['id']}", help="Lihat Detail"):
+                            st.session_state["detail_laporan_id"] = l["id"]
+                            st.session_state["detail_laporan_back"] = "dashboard"
+                            st.session_state["current_page"] = "detail_laporan"
+                            st.rerun()
+                    if idx < len(laporan_warga) - 1:
+                        st.divider()
+            else:
+                st.info("📭 Belum ada laporan.")
