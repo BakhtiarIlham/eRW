@@ -2,6 +2,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state
 from datetime import date
 
 
@@ -24,8 +25,10 @@ def render():
     user = st.session_state.get("user", {})
     role = user.get("role", "")
 
-    st.markdown('<div class="page-title">📋 Kelola Laporan Warga</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Verifikasi dan tindaklanjuti laporan pengaduan warga</div>', unsafe_allow_html=True)
+    render_section_header(
+        "📋 Kelola Laporan Warga",
+        "Verifikasi dan tindaklanjuti laporan pengaduan warga",
+    )
 
     laporan_list = ds.get("laporan")
 
@@ -35,6 +38,10 @@ def render():
         f_stat = st.selectbox("Filter Status", ["Semua", "Menunggu", "Diverifikasi", "Diproses", "Selesai", "Ditolak"])
 
     filtered = laporan_list if f_stat == "Semua" else [l for l in laporan_list if l["status"] == f_stat]
+
+    if not filtered:
+        render_empty_state("📋", "Tidak ada laporan untuk filter ini", "Coba ubah filter status di atas.")
+        return
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
     for l in filtered[::-1]:

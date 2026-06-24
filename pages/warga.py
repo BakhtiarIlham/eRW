@@ -3,16 +3,13 @@ import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state, confirm_delete_button
 
 
 def render():
-    st.markdown(
-        '<div class="page-title">👥 Kelola Data Warga</div>',
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        '<div class="page-subtitle">Tambah, ubah, hapus dan cari data warga RW</div>',
-        unsafe_allow_html=True
+    render_section_header(
+        "👥 Kelola Data Warga",
+        "Tambah, ubah, hapus dan cari data warga RW",
     )
 
     warga_list = ds.get("warga")
@@ -124,6 +121,14 @@ def render():
     # =========================
     # CARD DAFTAR WARGA
     # =========================
+    if not warga_list:
+        render_empty_state(
+            "🔍" if search else "👥",
+            "Tidak ada warga yang cocok dengan pencarian" if search else "Belum ada data warga",
+            "Coba kata kunci lain." if search else "Klik \"Tambah Warga\" untuk menambahkan data pertama.",
+        )
+        return
+
     st.markdown(
         '<div class="card">',
         unsafe_allow_html=True
@@ -213,23 +218,16 @@ def render():
             st.session_state["edit_warga_id"] = w["id"]
             st.rerun()
 
-        if cols[7].button(
-            "🗑️",
-            key=f"delete_{w['id']}"
-        ):
-            current = ds.get("warga")
-
-            current = [
-                x for x in current
-                if x["id"] != w["id"]
-            ]
-
-            ds.set_data("warga", current)
-
-            st.success(
-                f"Data {w['nama']} berhasil dihapus."
-            )
-            st.rerun()
+        with cols[7]:
+            if confirm_delete_button(
+                f"warga_{w['id']}",
+                confirm_text=f"Yakin ingin menghapus data {w['nama']}?",
+            ):
+                current = ds.get("warga")
+                current = [x for x in current if x["id"] != w["id"]]
+                ds.set_data("warga", current)
+                st.success(f"Data {w['nama']} berhasil dihapus.")
+                st.rerun()
 
         # =====================
         # EDIT FORM

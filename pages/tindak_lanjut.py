@@ -5,6 +5,7 @@ from datetime import date
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state
 
 
 def render():
@@ -12,14 +13,9 @@ def render():
     user = st.session_state.get("user", {})
     nama = user.get("nama", "")
 
-    st.markdown(
-        '<div class="page-title">🔧 Tindak Lanjut Laporan</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="page-subtitle">Update progres penanganan laporan warga</div>',
-        unsafe_allow_html=True
+    render_section_header(
+        "🔧 Tindak Lanjut Laporan",
+        "Update progres penanganan laporan warga",
     )
 
     laporan_list = ds.get("laporan")
@@ -31,9 +27,7 @@ def render():
     ]
 
     if not my_laporan:
-        st.info(
-            "Tidak ada laporan yang perlu ditindaklanjuti saat ini."
-        )
+        render_empty_state("🔧", "Tidak ada laporan yang perlu ditindaklanjuti", "Laporan baru akan muncul di sini setelah diverifikasi oleh Pengurus RT/RW.")
         return
 
     for l in my_laporan:

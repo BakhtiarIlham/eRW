@@ -6,6 +6,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header
 from datetime import date
 
 BADGE = {"Menunggu": "badge-gray", "Diverifikasi": "badge-yellow", "Diproses": "badge-blue", "Selesai": "badge-green", "Ditolak": "badge-red"}
@@ -22,8 +23,10 @@ def render():
     laporan_list = ds.get("laporan")
     l = next((x for x in laporan_list if x["id"] == laporan_id), None)
 
-    st.markdown('<div class="page-title">📋 Detail Laporan</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Kronologi penanganan dan lampiran laporan</div>', unsafe_allow_html=True)
+    render_section_header(
+        "📋 Detail Laporan",
+        "Kronologi penanganan dan lampiran laporan",
+    )
 
     back_to = st.session_state.get("detail_laporan_back", "laporan")
     if st.button("⬅ Kembali"):

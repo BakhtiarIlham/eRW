@@ -2,11 +2,14 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state, confirm_delete_button
 
 
 def render():
-    st.markdown('<div class="page-title">🎁 Kelola Bantuan Sosial (Bansos)</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Kelola data penerima bantuan sosial warga</div>', unsafe_allow_html=True)
+    render_section_header(
+        "🎁 Kelola Bantuan Sosial (Bansos)",
+        "Kelola data penerima bantuan sosial warga",
+    )
 
     bansos_list = ds.get("bansos")
     role = st.session_state.get("user", {}).get("role", "")
@@ -39,13 +42,35 @@ def render():
                 st.success("✅ Data bansos ditambahkan!")
                 st.rerun()
 
+    if not bansos_list:
+        render_empty_state("🎁", "Belum ada data penerima bansos", "Tambahkan penerima bansos baru melalui form di atas.")
+        return
+
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    rows = ""
+    st.markdown('<div class="section-title">Daftar Penerima Bansos</div><br>', unsafe_allow_html=True)
+
+    header = st.columns([3, 2, 2, 1])
+    header[0].markdown("**Nama**")
+    header[1].markdown("**Jenis Bansos**")
+    header[2].markdown("**Status**")
+    header[3].markdown("**Hapus**")
+    st.divider()
+
     for b in bansos_list:
         cls = "badge-green" if b["status"] == "Aktif" else "badge-gray"
-        rows += f"<tr><td>{b['nama']}</td><td>{b['jenis']}</td><td><span class='badge {cls}'>{b['status']}</span></td></tr>"
-    st.markdown(
-        f"""<table class="styled-table"><thead><tr><th>Nama Warga</th><th>Jenis Bansos</th><th>Status</th></tr></thead><tbody>{rows}</tbody></table>""",
-        unsafe_allow_html=True,
-    )
+        cols = st.columns([3, 2, 2, 1])
+        cols[0].write(b["nama"])
+        cols[1].write(b["jenis"])
+        cols[2].markdown(f'<span class="badge {cls}">{b["status"]}</span>', unsafe_allow_html=True)
+        if role == "Pengurus RW":
+            with cols[3]:
+                if confirm_delete_button(
+                    f"bansos_{b['id']}",
+                    confirm_text=f"Hapus data bansos {b['nama']} ({b['jenis']})?",
+                ):
+                    current = ds.get("bansos")
+                    ds.set_data("bansos", [x for x in current if x["id"] != b["id"]])
+                    st.success("Data bansos dihapus.")
+                    st.rerun()
+        st.divider()
     st.markdown('</div>', unsafe_allow_html=True)

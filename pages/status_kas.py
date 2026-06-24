@@ -2,14 +2,17 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state
 
 
 def render():
     user = st.session_state.get("user", {})
     nama = user.get("nama", "")
 
-    st.markdown('<div class="page-title">💳 Status Pembayaran Kas</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Riwayat pembayaran kas warga Anda</div>', unsafe_allow_html=True)
+    render_section_header(
+        "💳 Status Pembayaran Kas",
+        "Riwayat pembayaran kas warga Anda",
+    )
 
     kas_list  = ds.get("kas")
     warga_list = ds.get("warga")
@@ -26,18 +29,20 @@ def render():
         <div><div class="metric-label">Belum Lunas</div><div class="metric-value" style="color:#991B1B;">Rp {total_belum:,}</div></div></div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
+
+    if not my_kas:
+        render_empty_state("💳", "Belum ada riwayat pembayaran kas")
+        return
+
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">📋 Riwayat Pembayaran</div><br>', unsafe_allow_html=True)
 
-    if my_kas:
-        rows = ""
-        for k in my_kas[::-1]:
-            cls = {"Lunas":"badge-green","Belum Lunas":"badge-red","Menunggu Verifikasi":"badge-yellow"}.get(k["status"],"badge-gray")
-            rows += f"<tr><td>Rp {k['nominal']:,}</td><td>{k['tanggal']}</td><td><span class='badge {cls}'>{k['status']}</span></td></tr>"
-        st.markdown(
-            f"""<table class="styled-table"><thead><tr><th>Nominal</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>{rows}</tbody></table>""",
-            unsafe_allow_html=True,
-        )
-    else:
-        st.info("Belum ada riwayat pembayaran kas.")
+    rows = ""
+    for k in my_kas[::-1]:
+        cls = {"Lunas":"badge-green","Belum Lunas":"badge-red","Menunggu Verifikasi":"badge-yellow"}.get(k["status"],"badge-gray")
+        rows += f"<tr><td>Rp {k['nominal']:,}</td><td>{k['tanggal']}</td><td><span class='badge {cls}'>{k['status']}</span></td></tr>"
+    st.markdown(
+        f"""<table class="styled-table"><thead><tr><th>Nominal</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>{rows}</tbody></table>""",
+        unsafe_allow_html=True,
+    )
     st.markdown('</div>', unsafe_allow_html=True)

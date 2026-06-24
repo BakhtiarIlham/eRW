@@ -4,6 +4,7 @@ import textwrap
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state, confirm_delete_button
 from datetime import date, timedelta
 
 
@@ -12,8 +13,10 @@ def render():
     role = user.get("role", "")
     nama = user.get("nama", "")
 
-    st.markdown('<div class="page-title">📅 Kegiatan Lingkungan</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Jadwal dan pendaftaran kegiatan warga</div>', unsafe_allow_html=True)
+    render_section_header(
+        "📅 Kegiatan Lingkungan",
+        "Jadwal dan pendaftaran kegiatan warga",
+    )
 
     kegiatan_list = ds.get("kegiatan")
     today = date.today()
@@ -39,6 +42,10 @@ def render():
                     st.warning("Nama kegiatan dan lokasi wajib diisi.")
 
     st.markdown("<br>", unsafe_allow_html=True)
+
+    if not kegiatan_list:
+        render_empty_state("📅", "Belum ada kegiatan terjadwal", "Buat kegiatan baru melalui form di atas.")
+        return
 
     # ── Kegiatan cards ────────────────────────────────────────────────────────
     upcoming = sorted(kegiatan_list, key=lambda x: x["tanggal"])
@@ -90,7 +97,11 @@ def render():
                     st.rerun()
         with col_del:
             if role in ["Pengurus RW", "Pengurus RT"]:
-                if st.button("🗑️ Hapus", key=f"del_k_{k['id']}"):
+                if confirm_delete_button(
+                    f"kegiatan_{k['id']}",
+                    confirm_text=f"Hapus kegiatan \"{k['nama']}\"?",
+                ):
                     current = ds.get("kegiatan")
                     ds.set_data("kegiatan", [x for x in current if x["id"] != k["id"]])
+                    st.success("Kegiatan dihapus.")
                     st.rerun()

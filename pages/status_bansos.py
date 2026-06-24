@@ -2,14 +2,17 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state
 
 
 def render():
     user = st.session_state.get("user", {})
     nama = user.get("nama", "")
 
-    st.markdown('<div class="page-title">🎁 Status Bantuan Sosial</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Informasi bantuan sosial yang Anda terima</div>', unsafe_allow_html=True)
+    render_section_header(
+        "🎁 Status Bantuan Sosial",
+        "Informasi bantuan sosial yang Anda terima",
+    )
 
     bansos_list = ds.get("bansos")
     warga_list  = ds.get("warga")
@@ -17,13 +20,10 @@ def render():
     my_bansos = [b for b in bansos_list if b["id_warga"] == w["id"]]
 
     if not my_bansos:
-        st.markdown(
-            """<div class="card" style="text-align:center; padding:3rem;">
-              <div style="font-size:3rem; margin-bottom:1rem;">📭</div>
-              <div style="color:#6B7280; font-size:0.95rem;">Anda tidak terdaftar sebagai penerima bantuan sosial saat ini.</div>
-              <div style="color:#9CA3AF; font-size:0.82rem; margin-top:8px;">Hubungi pengurus RW untuk informasi lebih lanjut.</div>
-            </div>""",
-            unsafe_allow_html=True,
+        render_empty_state(
+            "📭",
+            "Anda tidak terdaftar sebagai penerima bantuan sosial saat ini",
+            "Hubungi pengurus RW untuk informasi lebih lanjut.",
         )
         return
 

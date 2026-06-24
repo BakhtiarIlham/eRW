@@ -2,6 +2,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state, confirm_delete_button
 from datetime import date
 
 
@@ -10,8 +11,10 @@ def render():
     role = user.get("role", "")
     nama = user.get("nama", "")
 
-    st.markdown('<div class="page-title">📢 Pengumuman</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Informasi dan pengumuman lingkungan RW</div>', unsafe_allow_html=True)
+    render_section_header(
+        "📢 Pengumuman",
+        "Informasi dan pengumuman lingkungan RW",
+    )
 
     pengumuman = ds.get("pengumuman")
 
@@ -33,6 +36,10 @@ def render():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
+    if not pengumuman:
+        render_empty_state("📢", "Belum ada pengumuman", "Pengumuman baru akan muncul di sini setelah dipublikasikan.")
+        return
+
     for p in pengumuman:
         with st.container():
             st.markdown(
@@ -50,9 +57,14 @@ def render():
                 unsafe_allow_html=True,
             )
             if role in ["Pengurus RW", "Pengurus RT"]:
-                col_e, col_d, col_sp = st.columns([1, 1, 6])
+                col_d, col_sp = st.columns([1, 6])
                 with col_d:
-                    if st.button("🗑️ Hapus", key=f"del_p_{p['id']}", help="Hapus pengumuman"):
+                    if confirm_delete_button(
+                        f"pengumuman_{p['id']}",
+                        trigger_label="🗑️ Hapus",
+                        confirm_text=f"Hapus pengumuman \"{p['judul']}\"?",
+                    ):
                         current = ds.get("pengumuman")
                         ds.set_data("pengumuman", [x for x in current if x["id"] != p["id"]])
+                        st.success("Pengumuman dihapus.")
                         st.rerun()

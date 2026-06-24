@@ -2,12 +2,15 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state
 from datetime import date
 
 
 def render():
-    st.markdown('<div class="page-title">💰 Kelola Kas Warga</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Input dan verifikasi pembayaran kas warga</div>', unsafe_allow_html=True)
+    render_section_header(
+        "💰 Kelola Kas Warga",
+        "Input dan verifikasi pembayaran kas warga",
+    )
 
     kas_list = ds.get("kas")
     role     = st.session_state.get("user", {}).get("role", "")
@@ -74,7 +77,12 @@ def render():
     filtered = kas_list if filter_status == "Semua" else [k for k in kas_list if k["status"] == filter_status]
 
     # ── Table ────────────────────────────────────────────────────────────────
+    if not filtered:
+        render_empty_state("💰", "Tidak ada data kas untuk filter ini", "Coba ubah filter status di atas.")
+        return
+
     st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Riwayat Pembayaran Kas</div><br>', unsafe_allow_html=True)
     rows = ""
     for k in filtered:
         badge_cls = {
@@ -82,10 +90,6 @@ def render():
             "Belum Lunas": "badge-red",
             "Menunggu Verifikasi": "badge-yellow",
         }.get(k["status"], "badge-gray")
-
-        aksi = ""
-        if k["status"] == "Menunggu Verifikasi" and role == "Pengurus RW":
-            aksi = f"verif_{k['id']}"
 
         rows += f"""<tr>
           <td>{k['nama']}</td>

@@ -5,14 +5,17 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state
 
 
 def render():
     id_warga = st.session_state.get("detail_warga_id")
     w = ds.get_warga_by_id(id_warga)
 
-    st.markdown('<div class="page-title">👤 Detail Warga</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Profil lengkap dan riwayat aktivitas warga</div>', unsafe_allow_html=True)
+    render_section_header(
+        "👤 Detail Warga",
+        "Profil lengkap dan riwayat aktivitas warga",
+    )
 
     if st.button("⬅ Kembali ke Daftar Warga"):
         st.session_state["current_page"] = "warga" if st.session_state.get("user", {}).get("role") == "Pengurus RW" else "validasi_warga"

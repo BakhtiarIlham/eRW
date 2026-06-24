@@ -124,15 +124,15 @@ def inject_css():
             font-size: 0.83rem; color: #1E40AF; margin-bottom: 1rem;
         }
         .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
-        .section-title  { font-size:1rem; font-weight:600; color:#1E3A8A; }
+        .section-title  { font-size:1rem; font-weight:700; color:#1E3A8A; margin-bottom:0.2rem; }
 
-        /* ── Tambahan: panel detail interaktif ──────────────────────────── */
+        /* ── Panel detail interaktif ───────────────────────────────────── */
         .detail-panel {
-            background: #F8FAFF;
-            border: 1.5px dashed #93C5FD;
-            border-radius: 14px;
-            padding: 1.2rem 1.4rem;
-            margin: 0.4rem 0 1rem;
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1rem;
         }
         .detail-header {
             display:flex; align-items:center; gap:0.8rem; margin-bottom:0.9rem;
@@ -146,21 +146,51 @@ def inject_css():
         }
         .detail-label { font-size:0.74rem; color:#9CA3AF; margin-bottom:1px; }
         .detail-value { font-size:0.9rem; color:#1F2937; font-weight:500; }
+        .detail-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:1rem;
+        }
+        .info-item { background:#F8FAFC; border-radius:12px; padding:0.8rem; }
+        .info-label { color:#6B7280; font-size:0.75rem; margin-bottom:4px; }
+        .info-value { color:#111827; font-weight:600; font-size:0.9rem; }
 
-        /* ── Tambahan: timeline status laporan ───────────────────────────── */
+        /* ── Timeline status laporan ──────────────────────────────────── */
+        .timeline-card {
+            background:white; border:1px solid #E5E7EB; border-radius:14px;
+            padding:1rem; margin-bottom:0.75rem;
+        }
         .tl-item { display:flex; gap:0.7rem; padding-bottom:1rem; position:relative; }
         .tl-item:not(:last-child)::before {
-            content:""; position:absolute; left:9px; top:22px; bottom:0;
+            content:""; position:absolute; left:13px; top:30px; bottom:0;
             width:2px; background:#E0E7FF;
         }
         .tl-dot {
-            width:20px; height:20px; border-radius:50%; flex-shrink:0;
-            background:#1D4ED8; color:white; font-size:0.65rem;
+            width:28px; height:28px; border-radius:50%; flex-shrink:0;
+            background:#1D4ED8; color:white; font-size:0.8rem;
             display:flex; align-items:center; justify-content:center; font-weight:700;
             margin-top:1px; z-index:1;
         }
-        .tl-text   { font-size:0.84rem; color:#1F2937; font-weight:600; }
+        .tl-text   { font-size:0.86rem; color:#1F2937; font-weight:600; }
         .tl-meta   { font-size:0.74rem; color:#9CA3AF; margin-top:1px; }
+
+        /* ── Empty state konsisten ────────────────────────────────────── */
+        .empty-state {
+            text-align:center; padding:2.6rem 1.5rem;
+            color:#6B7280;
+        }
+        .empty-state .es-icon { font-size:2.6rem; margin-bottom:0.6rem; opacity:0.85; }
+        .empty-state .es-title { font-size:0.95rem; font-weight:600; color:#374151; margin-bottom:4px; }
+        .empty-state .es-sub { font-size:0.82rem; color:#9CA3AF; }
+
+        /* ── Sidebar: item menu aktif ─────────────────────────────────── */
+        .nav-active, .nav-inactive { margin-bottom: 2px; }
+        .nav-active > button {
+            background: rgba(255,255,255,0.22) !important;
+            border-color: rgba(255,255,255,0.4) !important;
+            font-weight: 700 !important;
+        }
+        .nav-active > button::after { content: " ●"; opacity: 0.8; font-size: 0.6rem; }
 
         /* ── Tambahan: kartu lampiran file ────────────────────────────────── */
         .file-chip {
@@ -172,68 +202,12 @@ def inject_css():
         .file-chip .fn { font-size:0.85rem; font-weight:600; color:#1E3A8A; }
         .file-chip .fs { font-size:0.72rem; color:#9CA3AF; }
 
-        /* ── Tambahan: tombol kecil "Lihat Detail" konsisten gaya lama ──── */
-        div[data-testid="column"] .stButton > button[kind="secondary"] {
-            background:#EEF2FF !important; color:#1E3A8A !important;
-            border:1px solid #C7D2FE !important;
-        }
-        /* ===== IMPROVEMENT DETAIL PAGE ===== */
-
-        .detail-panel {
-            background: #FFFFFF;
-            border: 1px solid #E5E7EB;
-            border-radius: 16px;
-            padding: 1rem 1.2rem;
-            margin-bottom: 1rem;
-        }
-
-        .detail-grid {
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-            gap:1rem;
-        }
-
-        .info-item {
-            background:#F8FAFC;
-            border-radius:12px;
-            padding:0.8rem;
-        }
-
-        .info-label {
-            color:#6B7280;
-            font-size:0.75rem;
-            margin-bottom:4px;
-        }
-
-        .info-value {
-            color:#111827;
-            font-weight:600;
-            font-size:0.9rem;
-        }
-
-        .timeline-card {
-            background:white;
-            border:1px solid #E5E7EB;
-            border-radius:14px;
-            padding:1rem;
-            margin-bottom:0.75rem;
-        }
-
-        .tl-dot {
-            width:28px !important;
-            height:28px !important;
-            font-size:0.8rem !important;
-        }
-
-        .file-chip {
-            transition:all .2s ease;
-        }
-
         .file-chip:hover {
             background:#EFF6FF;
             border-color:#93C5FD;
         }
 
+        /* ── Panel & card pendukung lainnya ───────────────────────────── */
         .panel-section {
             background: #FFFFFF;
             border: 1px solid #DBEAFE;
@@ -248,6 +222,7 @@ def inject_css():
             padding: 1rem 1.1rem;
             margin-bottom: 0.85rem;
             box-shadow: 0 14px 30px rgba(29, 78, 216, 0.08);
+            transition: all 0.2s ease;
         }
         .panel-card-sm:hover {
             transform: translateY(-1px);
@@ -269,6 +244,8 @@ def inject_css():
             color: #475569;
             font-size: 0.82rem;
         }
+
+        /* ── Heading konsisten untuk semua section di seluruh halaman ──── */
         .section-heading {
             color: #1D4ED8;
             font-size: 1.12rem;
@@ -285,6 +262,8 @@ def inject_css():
             color: #475569;
             font-size: 0.88rem;
         }
+
+        /* ── Tombol: gaya solid biru jadi default, kecuali tombol icon kecil ── */
         .stButton > button {
             border-radius: 10px !important;
             font-weight: 500 !important;
@@ -292,6 +271,26 @@ def inject_css():
             background: #1D4ED8 !important;
             border: 1px solid #2563EB !important;
             color: white !important;
+        }
+        .stButton > button:hover {
+            background: #1E40AF !important;
+            border-color: #1E40AF !important;
+        }
+        /* Tombol aksi sekunder/icon dalam tabel (Lihat/Edit) tetap soft */
+        div[data-testid="column"] .stButton > button[kind="secondary"] {
+            background:#EEF2FF !important; color:#1E3A8A !important;
+            border:1px solid #C7D2FE !important;
+        }
+        /* Tombol berbahaya (hapus, tolak, batal) — beri warna merah lembut
+           lewat data-testid khusus yang kita pasang dari Python via help text
+           class tidak bisa diberi langsung oleh Streamlit, jadi kita pakai
+           kontainer pembungkus .danger-zone untuk menandai area tombol hapus. */
+        .danger-zone .stButton > button {
+            background:#FEF2F2 !important; color:#991B1B !important;
+            border:1px solid #FECACA !important;
+        }
+        .danger-zone .stButton > button:hover {
+            background:#FEE2E2 !important; border-color:#FCA5A5 !important;
         }
 
         </style>
@@ -311,6 +310,66 @@ def logout():
     for k in ["logged_in", "user", "current_page", "confirm_logout"]:
         st.session_state.pop(k, None)
     st.rerun()
+
+
+# ── Komponen UI reusable (dipakai oleh semua halaman di folder pages/) ───────
+def render_section_header(title: str, subtitle: str = ""):
+    """Header judul halaman yang konsisten di semua halaman."""
+    sub_html = f'<div class="page-subtitle">{subtitle}</div>' if subtitle else ""
+    st.markdown(
+        f'<div class="page-title">{title}</div>{sub_html}',
+        unsafe_allow_html=True,
+    )
+
+
+def render_empty_state(icon: str, title: str, subtitle: str = ""):
+    """Tampilan kosong yang konsisten dipakai di semua daftar/tabel
+    yang belum punya data, menggantikan campuran st.info() dan HTML ad-hoc."""
+    sub_html = f'<div class="es-sub">{subtitle}</div>' if subtitle else ""
+    st.markdown(
+        f"""<div class="card">
+          <div class="empty-state">
+            <div class="es-icon">{icon}</div>
+            <div class="es-title">{title}</div>
+            {sub_html}
+          </div>
+        </div>""",
+        unsafe_allow_html=True,
+    )
+
+
+def confirm_delete_button(item_key: str, trigger_label: str = "🗑️", confirm_text: str = "Yakin ingin menghapus data ini?", use_container_width: bool = False):
+    """Tombol hapus dengan konfirmasi dua-langkah agar tidak ada data yang
+    terhapus tidak sengaja karena salah klik:
+      1) Pengguna klik tombol trigger (ikon 🗑️ atau label lain).
+      2) Muncul kotak konfirmasi "Ya, Hapus" / "Batal".
+    Mengembalikan True hanya pada klik "Ya, Hapus".
+
+    Pemakaian:
+        if confirm_delete_button(f"warga_{w['id']}"):
+            # lakukan penghapusan data di sini
+    """
+    state_key = f"confirm_del_{item_key}"
+    deleted = False
+
+    if not st.session_state.get(state_key, False):
+        if st.button(trigger_label, key=f"del_btn_{item_key}", use_container_width=use_container_width):
+            st.session_state[state_key] = True
+            st.rerun()
+    else:
+        st.markdown('<div class="danger-zone">', unsafe_allow_html=True)
+        st.caption(f"⚠️ {confirm_text}")
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("✅ Ya, Hapus", key=f"del_yes_{item_key}", use_container_width=True):
+                st.session_state[state_key] = False
+                deleted = True
+        with c2:
+            if st.button("✖ Batal", key=f"del_no_{item_key}", use_container_width=True):
+                st.session_state[state_key] = False
+                st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+    return deleted
 
 
 # ── Sidebar navigation ─────────────────────────────────────────────────────────
@@ -349,43 +408,52 @@ MENUS = {
 }
 
 def render_sidebar():
-        # Deprecated: original sidebar used Streamlit's `st.sidebar`.
-        # Some Streamlit environments may hide the native sidebar; render
-        # a left column sidebar instead so the menu is always visible.
-        user = get_user()
-        role = user.get("role", "")
-        menus = MENUS.get(role, [])
+    """Render panel navigasi di kolom kiri (pengganti st.sidebar bawaan,
+    karena beberapa environment Streamlit menyembunyikan sidebar asli).
+    Menu yang sedang aktif diberi highlight agar pengguna tahu posisinya."""
+    user = get_user()
+    role = user.get("role", "")
+    menus = MENUS.get(role, [])
+    current_page = st.session_state.get("current_page", "dashboard")
 
-        # Render the sidebar as a styled blue panel so white text stays visible
-        sidebar_html = f"""
-        <div style="background: linear-gradient(180deg, #1E3A8A 0%, #1D4ED8 100%);
-                                padding:1.2rem; border-radius:12px; color:white;">
-            <div style="text-align:center; margin-bottom:0.6rem;">
-                <div style="font-size:2rem;">🏘️</div>
-                <div style="font-size:1.1rem; font-weight:700; margin-top:6px;">e-RW</div>
-                <div style="font-size:0.72rem; opacity:0.92; margin-top:4px;">Sistem Layanan Warga</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.06); padding:0.65rem; border-radius:10px; margin-bottom:0.9rem;">
-                <div style="font-size:0.82rem; opacity:0.95;">Selamat datang,</div>
-                <div style="font-weight:600; font-size:0.95rem;">{user.get('nama','')}</div>
-                <div style="font-size:0.74rem; opacity:0.9; margin-top:6px;">
-                    <span style="background:rgba(255,255,255,0.12); padding:4px 8px; border-radius:18px;">{role}</span>
-                </div>
+    sidebar_html = f"""
+    <div style="background: linear-gradient(180deg, #1E3A8A 0%, #1D4ED8 100%);
+                            padding:1.2rem; border-radius:12px; color:white;">
+        <div style="text-align:center; margin-bottom:0.6rem;">
+            <div style="font-size:2rem;">🏘️</div>
+            <div style="font-size:1.1rem; font-weight:700; margin-top:6px;">e-RW</div>
+            <div style="font-size:0.72rem; opacity:0.92; margin-top:4px;">Sistem Layanan Warga</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.06); padding:0.65rem; border-radius:10px; margin-bottom:0.9rem;">
+            <div style="font-size:0.82rem; opacity:0.95;">Selamat datang,</div>
+            <div style="font-weight:600; font-size:0.95rem;">{user.get('nama','')}</div>
+            <div style="font-size:0.74rem; opacity:0.9; margin-top:6px;">
+                <span style="background:rgba(255,255,255,0.12); padding:4px 8px; border-radius:18px;">{role}</span>
             </div>
         </div>
-        """
-        st.markdown(sidebar_html, unsafe_allow_html=True)
+    </div>
+    """
+    st.markdown(sidebar_html, unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        # Render menu buttons (these inherit the global button styles)
-        for icon, label, key in menus:
-                if st.button(f"{icon}  {label}", key=f"nav_{key}"):
-                        st.session_state["current_page"] = key
-                        st.rerun()
+    # Menu navigasi — item yang sedang aktif diberi class .nav-active agar
+    # ter-highlight melalui CSS, dan halaman detail (mis. detail_warga yang
+    # dibuka dari menu "warga") tetap menyalakan menu induknya.
+    DETAIL_PARENT = {"detail_warga": "warga", "detail_laporan": None}
+    active_key = DETAIL_PARENT.get(current_page, current_page)
+    if current_page == "detail_laporan":
+        active_key = st.session_state.get("detail_laporan_back", "laporan")
 
-        # small spacer
-        st.markdown("<br>", unsafe_allow_html=True)
-        # Note: logout removed from sidebar because header already provides logout
+    for icon, label, key in menus:
+        is_active = (key == active_key)
+        wrapper_class = "nav-active" if is_active else "nav-inactive"
+        st.markdown(f'<div class="{wrapper_class}">', unsafe_allow_html=True)
+        if st.button(f"{icon}  {label}", key=f"nav_{key}", use_container_width=True):
+            st.session_state["current_page"] = key
+            st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
 
 
 # ── Header bar dengan tombol Logout ───────────────────────────────────────────

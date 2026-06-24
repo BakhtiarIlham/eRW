@@ -3,18 +3,14 @@ import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state, confirm_delete_button
 
 
 def render():
 
-    st.markdown(
-        '<div class="page-title">✅ Validasi Data Warga</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="page-subtitle">Verifikasi data warga baru atau perubahan data di wilayah RT</div>',
-        unsafe_allow_html=True
+    render_section_header(
+        "✅ Validasi Data Warga",
+        "Verifikasi data warga baru atau perubahan data di wilayah RT",
     )
 
     warga_list = ds.get("warga")
@@ -85,7 +81,7 @@ def render():
     # DATA MENUNGGU VALIDASI
     # ==================================================
 
-    st.markdown("### ⏳ Data Menunggu Validasi")
+    st.markdown('<div class="section-heading">⏳ Data Menunggu Validasi</div>', unsafe_allow_html=True)
 
     if pending:
 
@@ -145,25 +141,16 @@ def render():
                     st.rerun()
 
             with b:
-                if st.button(
-                    "❌ Tolak",
-                    key=f"reject_{w['id']}",
-                    use_container_width=True
+                if confirm_delete_button(
+                    f"reject_warga_{w['id']}",
+                    trigger_label="❌ Tolak",
+                    confirm_text=f"Tolak dan hapus data {w['nama']}? Data ini akan hilang permanen.",
+                    use_container_width=True,
                 ):
-
                     current = ds.get("warga")
-
-                    current = [
-                        x for x in current
-                        if x["id"] != w["id"]
-                    ]
-
+                    current = [x for x in current if x["id"] != w["id"]]
                     ds.set_data("warga", current)
-
-                    st.warning(
-                        f"{w['nama']} ditolak dan dihapus."
-                    )
-
+                    st.warning(f"{w['nama']} ditolak dan dihapus.")
                     st.rerun()
 
             with c:
@@ -182,15 +169,13 @@ def render():
 
     else:
 
-        st.success(
-            "🎉 Tidak ada data yang menunggu validasi."
-        )
+        render_empty_state("🎉", "Tidak ada data yang menunggu validasi", "Semua data warga sudah terverifikasi.")
 
     # ==================================================
     # DATA TERVERIFIKASI
     # ==================================================
 
-    st.markdown("### ✅ Data Terverifikasi")
+    st.markdown('<div class="section-heading">✅ Data Terverifikasi</div>', unsafe_allow_html=True)
 
     if verified:
 
@@ -248,6 +233,4 @@ def render():
 
     else:
 
-        st.info(
-            "Belum ada warga yang terverifikasi."
-        )
+        render_empty_state("✅", "Belum ada warga yang terverifikasi")

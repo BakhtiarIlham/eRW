@@ -3,20 +3,23 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state
 
 
 def render():
     user = st.session_state.get("user", {})
     nama = user.get("nama", "")
 
-    st.markdown('<div class="page-title">👤 Data Pribadi</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Informasi profil dan data keluarga Anda</div>', unsafe_allow_html=True)
+    render_section_header(
+        "👤 Data Pribadi",
+        "Informasi profil dan data keluarga Anda",
+    )
 
     warga_list = ds.get("warga")
     w = next((x for x in warga_list if x["nama"] == nama), None)
 
     if not w:
-        st.warning("Data profil belum tersedia.")
+        render_empty_state("👤", "Data profil belum tersedia", "Hubungi pengurus RW untuk melengkapi data Anda.")
         return
 
     val_cls = "badge-green" if w["validasi"] == "Terverifikasi" else "badge-yellow"

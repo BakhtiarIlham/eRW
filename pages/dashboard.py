@@ -2,6 +2,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state
 
 
 def metric_card(icon, label, value, color="#EEF2FF", icon_bg="#C7D2FE"):
@@ -43,12 +44,9 @@ def render():
     pengumuman   = ds.get("pengumuman")
 
     # ── Header ──────────────────────────────────────────────────────────────
-    st.markdown(
-        f"""
-        <div class="page-title">🏠 Dashboard</div>
-        <div class="page-subtitle">Selamat datang, <b>{nama}</b> — {role}</div>
-        """,
-        unsafe_allow_html=True,
+    render_section_header(
+        "🏠 Dashboard",
+        f"Selamat datang, <b>{nama}</b> — {role}",
     )
 
     # ══════════════════════════════════════════════════════════════════════════
@@ -132,7 +130,7 @@ def render():
         c3.markdown(metric_card("📢", "Pengumuman Aktif",  len(pengumuman),   "#EEF2FF", "#C7D2FE"), unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
-        st.subheader("⏳ Warga Menunggu Validasi")
+        st.markdown("<div class='section-heading'>⏳ Warga Menunggu Validasi</div>", unsafe_allow_html=True)
         pending_w = [x for x in warga_list if x["validasi"] == "Menunggu"]
         if pending_w:
             for idx, w in enumerate(pending_w):
@@ -166,7 +164,7 @@ def render():
         c3.markdown(metric_card("✅", "Selesai",           len(lap_selesai),  "#ECFDF5", "#A7F3D0"), unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
-        st.subheader("📬 Laporan Yang Perlu Ditindaklanjuti")
+        st.markdown("<div class='section-heading'>📬 Laporan Yang Perlu Ditindaklanjuti</div>", unsafe_allow_html=True)
         antrian = lap_verified + lap_diproses
         if antrian:
             for idx, l in enumerate(antrian):
@@ -207,7 +205,7 @@ def render():
         col_l, col_r = st.columns([3, 2])
 
         with col_l:
-            st.subheader("📢 Pengumuman Terbaru")
+            st.markdown("<div class='section-heading'>📢 Pengumuman Terbaru</div>", unsafe_allow_html=True)
             if pengumuman:
                 for p in pengumuman[:3]:
                     st.markdown(
@@ -222,7 +220,7 @@ def render():
                 st.info("📭 Belum ada pengumuman.")
 
         with col_r:
-            st.subheader("📋 Status Laporan Saya")
+            st.markdown("<div class='section-heading'>📋 Status Laporan Saya</div>", unsafe_allow_html=True)
             if laporan_warga:
                 for idx, l in enumerate(laporan_warga[::-1]):
                     badge_cls = {"Selesai":"badge-green","Diproses":"badge-blue","Diverifikasi":"badge-yellow","Menunggu":"badge-gray"}.get(l["status"],"badge-gray")

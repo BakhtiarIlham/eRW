@@ -2,6 +2,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header
 from datetime import date
 
 
@@ -9,8 +10,10 @@ def render():
     user = st.session_state.get("user", {})
     nama = user.get("nama", "")
 
-    st.markdown('<div class="page-title">📩 Kirim Laporan / Pengaduan</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Sampaikan keluhan atau pengaduan kepada pengurus RW</div>', unsafe_allow_html=True)
+    render_section_header(
+        "📩 Kirim Laporan / Pengaduan",
+        "Sampaikan keluhan atau pengaduan kepada pengurus RW",
+    )
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('<div class="section-title">📝 Form Pengaduan</div><br>', unsafe_allow_html=True)

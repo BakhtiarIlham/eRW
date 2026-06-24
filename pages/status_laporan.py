@@ -2,20 +2,23 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
+from app import render_section_header, render_empty_state
 
 
 def render():
     user = st.session_state.get("user", {})
     nama = user.get("nama", "")
 
-    st.markdown('<div class="page-title">📊 Status Laporan Saya</div>', unsafe_allow_html=True)
-    st.markdown('<div class="page-subtitle">Pantau perkembangan laporan yang telah Anda kirimkan</div>', unsafe_allow_html=True)
+    render_section_header(
+        "📊 Status Laporan Saya",
+        "Pantau perkembangan laporan yang telah Anda kirimkan",
+    )
 
     laporan_list = ds.get("laporan")
     my_laporan   = [l for l in laporan_list if l["nama"] == nama]
 
     if not my_laporan:
-        st.info("Anda belum memiliki laporan. Kirim laporan pertama Anda melalui menu Kirim Laporan.")
+        render_empty_state("📭", "Anda belum memiliki laporan", "Kirim laporan pertama Anda melalui menu Kirim Laporan.")
         return
 
     BADGE = {"Menunggu":"badge-gray","Diverifikasi":"badge-yellow","Diproses":"badge-blue","Selesai":"badge-green","Ditolak":"badge-red"}
