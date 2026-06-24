@@ -1,5 +1,7 @@
 import streamlit as st
 import sys, os
+import textwrap
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
 from datetime import date, timedelta
@@ -48,25 +50,32 @@ def render():
 
         border_col = "#9CA3AF" if is_past else "#3B82F6"
         badge_html = f"""<span class="badge {'badge-gray' if is_past else 'badge-blue'}">{'Selesai' if is_past else 'Mendatang'}</span>"""
+        status_html = []
+        status_html.append(badge_html)
+        status_html.append(f"<span class=\"badge badge-blue\" style=\"margin-left:6px;\">👥 {jml_peserta} peserta</span>")
+        if sudah_daftar:
+            status_html.append('<span class="badge badge-green" style="margin-left:6px;">✅ Sudah Daftar</span>')
 
-        st.markdown(
-            f"""<div class="card" style="border-left:4px solid {border_col};">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                  <div style="font-weight:700; font-size:1rem; color:#1E3A8A;">{k['nama']}</div>
-                  <div style="font-size:0.8rem; color:#6B7280; margin-top:4px;">
-                    📅 {k['tanggal']} &nbsp;·&nbsp; 📍 {k['lokasi']} &nbsp;·&nbsp; 👤 {k['oleh']}
-                  </div>
-                  <div style="margin-top:8px;">
-                    {badge_html}
-                    <span class="badge badge-blue" style="margin-left:6px;">👥 {jml_peserta} peserta</span>
-                    {'<span class="badge badge-green" style="margin-left:6px;">✅ Sudah Daftar</span>' if sudah_daftar else ''}
-                  </div>
-                </div>
-              </div>
-            </div>""",
-            unsafe_allow_html=True,
-        )
+        html_lines = [
+            f'<div class="card" style="border-left:4px solid {border_col};">',
+            '<div style="display:flex; justify-content:space-between; align-items:center;">',
+            '<div>',
+            f'<div style="font-weight:700; font-size:1rem; color:#1E3A8A;">{k["nama"]}</div>',
+            f'<div style="font-size:0.8rem; color:#6B7280; margin-top:4px;">',
+            f'📅 {k["tanggal"]} &nbsp;·&nbsp; 📍 {k["lokasi"]} &nbsp;·&nbsp; 👤 {k["oleh"]}',
+            '</div>',
+            '<div style="margin-top:8px;">',
+        ]
+        html_lines.extend(status_html)
+        html_lines.extend([
+            '</div>',
+            '</div>',
+            '</div>',
+            '</div>',
+        ])
+
+        card_html = ''.join(html_lines)
+        st.markdown(card_html, unsafe_allow_html=True)
 
         col_d, col_del, col_sp = st.columns([2, 1, 5])
         with col_d:

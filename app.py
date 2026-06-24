@@ -5,7 +5,7 @@ st.set_page_config(
     page_title="e-RW | Sistem Layanan Warga",
     page_icon="🏘️",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 # ── Dummy accounts ────────────────────────────────────────────────────────────
@@ -22,7 +22,7 @@ def inject_css():
         """
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+        html, body, .stApp { font-family: 'Inter', sans-serif; }
         .stApp { background: #F0F4FF; }
         #MainMenu, footer, header { visibility: hidden; }
         .block-container { padding-top: 1rem; }
@@ -30,6 +30,10 @@ def inject_css():
         [data-testid="stSidebar"] {
             background: linear-gradient(180deg, #1E3A8A 0%, #1D4ED8 100%);
             border-right: none;
+        }
+        [data-testid="stSidebar"] {
+        min-width: 280px !important;
+        width: 280px !important;
         }
         [data-testid="stSidebar"] * { color: #E0E7FF !important; }
         [data-testid="stSidebar"] .stButton > button {
@@ -90,10 +94,7 @@ def inject_css():
         .styled-table tr:hover td { background:#F9FAFB; }
 
         .stButton > button { border-radius: 10px !important; font-weight: 500 !important; transition: all 0.2s !important; }
-        div[data-testid="column"] .stButton > button[kind="primary"] {
-            background: linear-gradient(135deg, #1D4ED8, #2563EB) !important;
-            border: none !important; color: white !important;
-        }
+        .stButton button { border-radius: 10px;}
 
         .logout-bar {
             display: flex;
@@ -124,6 +125,175 @@ def inject_css():
         }
         .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
         .section-title  { font-size:1rem; font-weight:600; color:#1E3A8A; }
+
+        /* ── Tambahan: panel detail interaktif ──────────────────────────── */
+        .detail-panel {
+            background: #F8FAFF;
+            border: 1.5px dashed #93C5FD;
+            border-radius: 14px;
+            padding: 1.2rem 1.4rem;
+            margin: 0.4rem 0 1rem;
+        }
+        .detail-header {
+            display:flex; align-items:center; gap:0.8rem; margin-bottom:0.9rem;
+            padding-bottom:0.8rem; border-bottom:1px solid #E0E7FF;
+        }
+        .detail-avatar {
+            width:46px; height:46px; border-radius:50%;
+            background:linear-gradient(135deg,#1D4ED8,#3B82F6);
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.3rem; color:white; flex-shrink:0;
+        }
+        .detail-label { font-size:0.74rem; color:#9CA3AF; margin-bottom:1px; }
+        .detail-value { font-size:0.9rem; color:#1F2937; font-weight:500; }
+
+        /* ── Tambahan: timeline status laporan ───────────────────────────── */
+        .tl-item { display:flex; gap:0.7rem; padding-bottom:1rem; position:relative; }
+        .tl-item:not(:last-child)::before {
+            content:""; position:absolute; left:9px; top:22px; bottom:0;
+            width:2px; background:#E0E7FF;
+        }
+        .tl-dot {
+            width:20px; height:20px; border-radius:50%; flex-shrink:0;
+            background:#1D4ED8; color:white; font-size:0.65rem;
+            display:flex; align-items:center; justify-content:center; font-weight:700;
+            margin-top:1px; z-index:1;
+        }
+        .tl-text   { font-size:0.84rem; color:#1F2937; font-weight:600; }
+        .tl-meta   { font-size:0.74rem; color:#9CA3AF; margin-top:1px; }
+
+        /* ── Tambahan: kartu lampiran file ────────────────────────────────── */
+        .file-chip {
+            display:flex; align-items:center; gap:0.6rem;
+            background:white; border:1px solid #E0E7FF; border-radius:10px;
+            padding:0.6rem 0.9rem; margin-top:0.5rem;
+        }
+        .file-chip .fi { font-size:1.4rem; }
+        .file-chip .fn { font-size:0.85rem; font-weight:600; color:#1E3A8A; }
+        .file-chip .fs { font-size:0.72rem; color:#9CA3AF; }
+
+        /* ── Tambahan: tombol kecil "Lihat Detail" konsisten gaya lama ──── */
+        div[data-testid="column"] .stButton > button[kind="secondary"] {
+            background:#EEF2FF !important; color:#1E3A8A !important;
+            border:1px solid #C7D2FE !important;
+        }
+        /* ===== IMPROVEMENT DETAIL PAGE ===== */
+
+        .detail-panel {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+            gap:1rem;
+        }
+
+        .info-item {
+            background:#F8FAFC;
+            border-radius:12px;
+            padding:0.8rem;
+        }
+
+        .info-label {
+            color:#6B7280;
+            font-size:0.75rem;
+            margin-bottom:4px;
+        }
+
+        .info-value {
+            color:#111827;
+            font-weight:600;
+            font-size:0.9rem;
+        }
+
+        .timeline-card {
+            background:white;
+            border:1px solid #E5E7EB;
+            border-radius:14px;
+            padding:1rem;
+            margin-bottom:0.75rem;
+        }
+
+        .tl-dot {
+            width:28px !important;
+            height:28px !important;
+            font-size:0.8rem !important;
+        }
+
+        .file-chip {
+            transition:all .2s ease;
+        }
+
+        .file-chip:hover {
+            background:#EFF6FF;
+            border-color:#93C5FD;
+        }
+
+        .panel-section {
+            background: #FFFFFF;
+            border: 1px solid #DBEAFE;
+            border-radius: 18px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .panel-card-sm {
+            background: #EFF6FF;
+            border: 1px solid #BBD7FF;
+            border-radius: 18px;
+            padding: 1rem 1.1rem;
+            margin-bottom: 0.85rem;
+            box-shadow: 0 14px 30px rgba(29, 78, 216, 0.08);
+        }
+        .panel-card-sm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 32px rgba(29, 78, 216, 0.12);
+        }
+        .panel-card-title {
+            color: #1E40AF;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+        .panel-card-text {
+            color: #0F172A;
+            font-size: 0.9rem;
+            margin-bottom: 0.55rem;
+            line-height: 1.55;
+        }
+        .panel-card-meta {
+            color: #475569;
+            font-size: 0.82rem;
+        }
+        .section-heading {
+            color: #1D4ED8;
+            font-size: 1.12rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        .section-heading-secondary {
+            color: #0F172A;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        .section-subtitle {
+            color: #475569;
+            font-size: 0.88rem;
+        }
+        .stButton > button {
+            border-radius: 10px !important;
+            font-weight: 500 !important;
+            transition: all 0.2s !important;
+            background: #1D4ED8 !important;
+            border: 1px solid #2563EB !important;
+            color: white !important;
+        }
+
         </style>
         """,
         unsafe_allow_html=True,
@@ -169,7 +339,8 @@ MENUS = {
     "Warga": [
         ("🏠", "Dashboard",            "dashboard"),
         ("👤", "Data Pribadi",          "profil"),
-        ("📢", "Pengumuman & Kegiatan", "pengumuman"),
+        ("📢", "Pengumuman",            "pengumuman"),
+        ("📅", "Kegiatan",              "kegiatan"),
         ("📩", "Kirim Laporan",         "kirim_laporan"),
         ("📊", "Status Laporan",        "status_laporan"),
         ("💳", "Status Kas",            "status_kas"),
@@ -178,41 +349,43 @@ MENUS = {
 }
 
 def render_sidebar():
-    user = get_user()
-    role = user.get("role", "")
-    menus = MENUS.get(role, [])
-    with st.sidebar:
-        st.markdown(
-            """
-            <div style="text-align:center; padding:1.2rem 0 1rem;">
-              <div style="font-size:2rem;">🏘️</div>
-              <div style="font-size:1.1rem; font-weight:700; color:white; margin-top:4px;">e-RW</div>
-              <div style="font-size:0.72rem; color:#A5B4FC; margin-top:2px;">Sistem Layanan Warga</div>
+        # Deprecated: original sidebar used Streamlit's `st.sidebar`.
+        # Some Streamlit environments may hide the native sidebar; render
+        # a left column sidebar instead so the menu is always visible.
+        user = get_user()
+        role = user.get("role", "")
+        menus = MENUS.get(role, [])
+
+        # Render the sidebar as a styled blue panel so white text stays visible
+        sidebar_html = f"""
+        <div style="background: linear-gradient(180deg, #1E3A8A 0%, #1D4ED8 100%);
+                                padding:1.2rem; border-radius:12px; color:white;">
+            <div style="text-align:center; margin-bottom:0.6rem;">
+                <div style="font-size:2rem;">🏘️</div>
+                <div style="font-size:1.1rem; font-weight:700; margin-top:6px;">e-RW</div>
+                <div style="font-size:0.72rem; opacity:0.92; margin-top:4px;">Sistem Layanan Warga</div>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.markdown(
-            f"""
-            <div style="background:rgba(255,255,255,0.1); border-radius:12px;
-                        padding:0.75rem 1rem; margin-bottom:1rem;">
-              <div style="font-size:0.82rem; color:#C7D2FE;">Selamat datang,</div>
-              <div style="font-weight:600; font-size:0.95rem; color:white;">{user.get('nama','')}</div>
-              <div style="font-size:0.74rem; color:#93C5FD; margin-top:2px;">
-                <span style="background:rgba(255,255,255,0.15); padding:2px 8px; border-radius:20px;">{role}</span>
-              </div>
+            <div style="background:rgba(255,255,255,0.06); padding:0.65rem; border-radius:10px; margin-bottom:0.9rem;">
+                <div style="font-size:0.82rem; opacity:0.95;">Selamat datang,</div>
+                <div style="font-weight:600; font-size:0.95rem;">{user.get('nama','')}</div>
+                <div style="font-size:0.74rem; opacity:0.9; margin-top:6px;">
+                    <span style="background:rgba(255,255,255,0.12); padding:4px 8px; border-radius:18px;">{role}</span>
+                </div>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.markdown("---")
+        </div>
+        """
+        st.markdown(sidebar_html, unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        # Render menu buttons (these inherit the global button styles)
         for icon, label, key in menus:
-            if st.button(f"{icon}  {label}", key=f"nav_{key}"):
-                st.session_state["current_page"] = key
-                st.rerun()
-        st.markdown("---")
-        if st.button("🚪  Logout"):
-            logout()
+                if st.button(f"{icon}  {label}", key=f"nav_{key}"):
+                        st.session_state["current_page"] = key
+                        st.rerun()
+
+        # small spacer
+        st.markdown("<br>", unsafe_allow_html=True)
+        # Note: logout removed from sidebar because header already provides logout
 
 
 # ── Header bar dengan tombol Logout ───────────────────────────────────────────
@@ -311,6 +484,9 @@ def render_page():
     elif page == "status_laporan":                            from pages import status_laporan as p; p.render()
     elif page == "status_kas":                                from pages import status_kas     as p; p.render()
     elif page == "status_bansos":                             from pages import status_bansos  as p; p.render()
+    elif page == "detail_warga"   and role in ["Pengurus RW", "Pengurus RT"]:
+                                                               from pages import detail_warga   as p; p.render()
+    elif page == "detail_laporan":                            from pages import detail_laporan as p; p.render()
     else:                                                     from pages import dashboard      as p; p.render()
 
 
@@ -320,9 +496,13 @@ def main():
     if not is_logged_in():
         render_login()
     else:
-        render_sidebar()
-        render_header_logout()
-        render_page()
+        left_col, main_col = st.columns([1, 4])
+        with left_col:
+            render_sidebar()
+        with main_col:
+            render_header_logout()
+            render_page()
 
 if __name__ == "__main__":
     main()
+    

@@ -22,6 +22,27 @@ def render():
         placeholder="Jelaskan masalah yang Anda alami secara detail: lokasi, waktu kejadian, dampak yang dirasakan..."
     )
 
+    uploaded_file = st.file_uploader(
+        "📎 Lampirkan Foto/Dokumen Bukti (opsional)",
+        type=["jpg", "jpeg", "png", "pdf"],
+        help="Unggah foto kondisi lapangan atau dokumen pendukung lainnya untuk memperkuat laporan Anda.",
+    )
+    if uploaded_file is not None:
+        size_kb = round(uploaded_file.size / 1024, 1)
+        icon = "📄" if uploaded_file.type == "application/pdf" else "🖼️"
+        st.markdown(
+            f"""<div class="file-chip">
+              <div class="fi">{icon}</div>
+              <div>
+                <div class="fn">{uploaded_file.name}</div>
+                <div class="fs">{size_kb} KB · {uploaded_file.type}</div>
+              </div>
+            </div>""",
+            unsafe_allow_html=True,
+        )
+        if uploaded_file.type in ["image/jpeg", "image/png"]:
+            st.image(uploaded_file, caption="Pratinjau lampiran", width=260)
+
     st.markdown(
         """<div class="info-box">
           ℹ️ Laporan Anda akan diverifikasi oleh Pengurus RT/RW terlebih dahulu sebelum diteruskan ke Petugas Operasional.
@@ -37,11 +58,19 @@ def render():
                 w = next((x for x in warga_list if x["nama"] == nama), {"id": 1})
                 current = ds.get("laporan")
                 new_id  = max((l["id"] for l in current), default=0) + 1
+                lampiran = None
+                if uploaded_file is not None:
+                    lampiran = {
+                        "nama_file": uploaded_file.name,
+                        "ukuran_kb": round(uploaded_file.size / 1024, 1),
+                        "tipe": uploaded_file.type,
+                    }
                 current.append({
                     "id": new_id, "id_warga": w["id"], "nama": nama,
                     "judul": judul, "deskripsi": deskripsi,
                     "tanggal": str(date.today()), "status": "Menunggu",
-                    "petugas": "", "catatan": "",
+                    "petugas": "", "catatan": "", "lampiran": lampiran,
+                    "riwayat": [{"status": "Menunggu", "tanggal": str(date.today()), "oleh": nama}],
                 })
                 ds.set_data("laporan", current)
                 st.success("✅ Laporan Anda berhasil dikirim! Silakan pantau statusnya di menu Status Laporan.")
