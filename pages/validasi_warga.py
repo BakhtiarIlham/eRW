@@ -3,7 +3,7 @@ import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
-from app import render_section_header, render_empty_state, confirm_delete_button
+from app import render_section_header, render_empty_state, confirm_delete_button, html_block
 
 
 def render():
@@ -32,7 +32,7 @@ def render():
     c1, c2 = st.columns(2)
 
     with c1:
-        st.markdown(
+        html_block(
             f"""
             <div class="metric-card">
                 <div class="metric-icon" style="background:#FDE68A;">
@@ -49,12 +49,11 @@ def render():
                     </div>
                 </div>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
 
     with c2:
-        st.markdown(
+        html_block(
             f"""
             <div class="metric-card">
                 <div class="metric-icon" style="background:#A7F3D0;">
@@ -71,8 +70,7 @@ def render():
                     </div>
                 </div>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -87,7 +85,7 @@ def render():
 
         for w in pending:
 
-            st.markdown(
+            html_block(
                 f"""
                 <div class="card" style="border-left:5px solid #F59E0B;">
                     <div style="font-weight:700;font-size:1rem;color:#1E3A8A;">
@@ -112,8 +110,7 @@ def render():
                         </span>
                     </div>
                 </div>
-                """,
-                unsafe_allow_html=True
+                """
             )
 
             a, b, c, d = st.columns([1, 1, 1, 4])
@@ -198,21 +195,14 @@ def render():
             row = st.columns([3, 3, 2, 1])
 
             row[0].markdown(
-                f"""
-                <b>{w['nama']}</b><br>
-                <small>{w['nik']}</small>
-                """,
+                f"<b>{w['nama']}</b><br><small>{w['nik']}</small>",
                 unsafe_allow_html=True
             )
 
             row[1].write(w["alamat"])
 
             row[2].markdown(
-                """
-                <span class="badge badge-green">
-                    Terverifikasi
-                </span>
-                """,
+                '<span class="badge badge-green">Terverifikasi</span>',
                 unsafe_allow_html=True
             )
 

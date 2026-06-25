@@ -3,7 +3,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
-from app import render_section_header, render_empty_state
+from app import render_section_header, render_empty_state, html_block
 
 
 def render():
@@ -24,7 +24,7 @@ def render():
 
     val_cls = "badge-green" if w["validasi"] == "Terverifikasi" else "badge-yellow"
 
-    st.markdown(
+    html_block(
         f"""<div class="card">
           <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1.2rem;">
             <div style="width:64px; height:64px; background:linear-gradient(135deg,#1D4ED8,#3B82F6);
@@ -62,6 +62,5 @@ def render():
               <div><span class="badge badge-green">{w['status']}</span></div>
             </div>
           </div>
-        </div>""",
-        unsafe_allow_html=True,
+        </div>"""
     )

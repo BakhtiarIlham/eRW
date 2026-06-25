@@ -2,11 +2,17 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
-from app import render_section_header, render_empty_state
+from app import render_section_header, render_empty_state, html_block
+
+
+def _dedent(s: str) -> str:
+    """Hapus indentasi di awal setiap baris agar Streamlit tidak salah
+    menafsirkan baris berindentasi 4+ spasi sebagai code block Markdown."""
+    return "\n".join(line.lstrip() for line in s.split("\n"))
 
 
 def metric_card(icon, label, value, color="#EEF2FF", icon_bg="#C7D2FE"):
-    return f"""
+    return _dedent(f"""
     <div class="metric-card">
       <div class="metric-icon" style="background:{icon_bg};">{icon}</div>
       <div>
@@ -14,11 +20,11 @@ def metric_card(icon, label, value, color="#EEF2FF", icon_bg="#C7D2FE"):
         <div class="metric-value" style="color:#1E3A8A;">{value}</div>
       </div>
     </div>
-    """
+    """)
 
 
 def render_card(title, subtitle, meta, badge_cls):
-    return f"""
+    return _dedent(f"""
     <div class='panel-card-sm'>
       <div class='panel-card-title'>{title}</div>
       <div class='panel-card-text'>{subtitle}</div>
@@ -29,7 +35,7 @@ def render_card(title, subtitle, meta, badge_cls):
         </span>
       </div>
     </div>
-    """
+    """)
 
 
 def render():
@@ -95,13 +101,12 @@ def render():
             st.markdown("<div class='section-heading'>📢 Pengumuman Terbaru</div>", unsafe_allow_html=True)
             if pengumuman:
                 for p in pengumuman[-3:][::-1]:
-                    st.markdown(
+                    html_block(
                         f"""<div class='panel-card-sm'>
                               <div class='panel-card-title'>{p['judul']}</div>
                               <div class='panel-card-text'>{p['isi'][:120] + ('…' if len(p['isi']) > 120 else '')}</div>
                               <div class='panel-card-meta'>📅 {p['tanggal']} • {p['oleh']}</div>
-                            </div>""",
-                        unsafe_allow_html=True,
+                            </div>"""
                     )
             else:
                 st.info("📭 Belum ada pengumuman.")
@@ -109,12 +114,11 @@ def render():
             st.markdown("<br>", unsafe_allow_html=True)
             st.markdown("<div class='section-heading'>🎁 Bansos Aktif</div>", unsafe_allow_html=True)
             aktif_b = sum(1 for b in bansos_list if b["status"] == "Aktif")
-            st.markdown(
+            html_block(
                 f"""<div class='panel-card-sm'>
                       <div class='panel-card-title'>Status Bansos</div>
                       <div class='panel-card-text'>Aktif: <strong>{aktif_b}</strong> dari <strong>{total_bansos}</strong> penerima</div>
-                    </div>""",
-                unsafe_allow_html=True,
+                    </div>"""
             )
 
     # ══════════════════════════════════════════════════════════════════════════
@@ -208,13 +212,12 @@ def render():
             st.markdown("<div class='section-heading'>📢 Pengumuman Terbaru</div>", unsafe_allow_html=True)
             if pengumuman:
                 for p in pengumuman[:3]:
-                    st.markdown(
+                    html_block(
                         f"""<div style="border-left:4px solid #3B82F6; padding:8px 12px; margin-bottom:10px; border-radius:4px; background:#F9FAFB;">
                           <div style="font-weight:600; color:#1E3A8A; font-size:0.9rem;">{p['judul']}</div>
                           <div style="font-size:0.8rem; color:#6B7280; margin-top:3px;">{p['isi'][:80] if len(p['isi']) > 80 else p['isi']}{'…' if len(p['isi']) > 80 else ''}</div>
                           <div style="font-size:0.72rem; color:#9CA3AF; margin-top:4px;">{p['tanggal']}</div>
-                        </div>""",
-                        unsafe_allow_html=True,
+                        </div>"""
                     )
             else:
                 st.info("📭 Belum ada pengumuman.")

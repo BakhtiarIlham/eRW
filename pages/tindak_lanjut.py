@@ -5,7 +5,7 @@ from datetime import date
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
-from app import render_section_header, render_empty_state
+from app import render_section_header, render_empty_state, html_block
 
 
 def render():
@@ -39,7 +39,7 @@ def render():
             "Ditolak": "badge-red"
         }.get(l["status"], "badge-gray")
 
-        st.markdown(
+        html_block(
             f"""
             <div class="card">
 
@@ -66,8 +66,7 @@ def render():
                 </div>
 
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
 
         b1, b2 = st.columns([1, 3])

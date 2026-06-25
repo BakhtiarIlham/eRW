@@ -5,7 +5,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
-from app import render_section_header, render_empty_state
+from app import render_section_header, render_empty_state, html_block
 
 
 def render():
@@ -31,7 +31,7 @@ def render():
     stat_cls = {"Aktif": "badge-green", "Pindah": "badge-gray", "Meninggal": "badge-red"}.get(w["status"], "badge-gray")
 
     # ── Header profil ───────────────────────────────────────────────────────
-    st.markdown(
+    html_block(
         f"""<div class="card">
           <div class="detail-header">
             <div class="detail-avatar">👤</div>
@@ -49,8 +49,7 @@ def render():
             <div><div class="detail-label">No. HP</div><div class="detail-value">{w['no_hp']}</div></div>
             <div><div class="detail-label">Alamat</div><div class="detail-value">{w['alamat']}</div></div>
           </div>
-        </div>""",
-        unsafe_allow_html=True,
+        </div>"""
     )
 
     # ── Ringkasan cepat ──────────────────────────────────────────────────────
@@ -59,12 +58,15 @@ def render():
     lap_aktif = sum(1 for l in riwayat["laporan"] if l["status"] not in ["Selesai", "Ditolak"])
 
     c1, c2, c3 = st.columns(3)
-    c1.markdown(f"""<div class="metric-card"><div class="metric-icon" style="background:#A7F3D0;">💰</div>
-        <div><div class="metric-label">Kas Terbayar</div><div class="metric-value" style="color:#065F46;">Rp {total_lunas:,}</div></div></div>""", unsafe_allow_html=True)
-    c2.markdown(f"""<div class="metric-card"><div class="metric-icon" style="background:#FDE68A;">🎁</div>
-        <div><div class="metric-label">Bansos Aktif</div><div class="metric-value" style="color:#92400E;">{bansos_aktif}</div></div></div>""", unsafe_allow_html=True)
-    c3.markdown(f"""<div class="metric-card"><div class="metric-icon" style="background:#FECACA;">📋</div>
-        <div><div class="metric-label">Laporan Berjalan</div><div class="metric-value" style="color:#991B1B;">{lap_aktif}</div></div></div>""", unsafe_allow_html=True)
+    with c1:
+        html_block(f"""<div class="metric-card"><div class="metric-icon" style="background:#A7F3D0;">💰</div>
+        <div><div class="metric-label">Kas Terbayar</div><div class="metric-value" style="color:#065F46;">Rp {total_lunas:,}</div></div></div>""")
+    with c2:
+        html_block(f"""<div class="metric-card"><div class="metric-icon" style="background:#FDE68A;">🎁</div>
+        <div><div class="metric-label">Bansos Aktif</div><div class="metric-value" style="color:#92400E;">{bansos_aktif}</div></div></div>""")
+    with c3:
+        html_block(f"""<div class="metric-card"><div class="metric-icon" style="background:#FECACA;">📋</div>
+        <div><div class="metric-label">Laporan Berjalan</div><div class="metric-value" style="color:#991B1B;">{lap_aktif}</div></div></div>""")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -99,7 +101,7 @@ def render():
             BADGE = {"Menunggu": "badge-gray", "Diverifikasi": "badge-yellow", "Diproses": "badge-blue", "Selesai": "badge-green", "Ditolak": "badge-red"}
             for l in riwayat["laporan"][::-1]:
                 badge_cls = BADGE.get(l["status"], "badge-gray")
-                st.markdown(
+                html_block(
                     f"""<div class="card">
                       <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                         <div>
@@ -108,8 +110,7 @@ def render():
                           <div style="font-size:0.78rem; color:#9CA3AF; margin-top:3px;">📅 {l['tanggal']}</div>
                         </div>
                       </div>
-                    </div>""",
-                    unsafe_allow_html=True,
+                    </div>"""
                 )
                 if st.button("🔍 Lihat Detail Laporan", key=f"dl_{l['id']}"):
                     st.session_state["detail_laporan_id"] = l["id"]

@@ -2,7 +2,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
-from app import render_section_header, render_empty_state
+from app import render_section_header, render_empty_state, html_block
 
 
 def render():
@@ -23,10 +23,12 @@ def render():
     total_belum = sum(k["nominal"] for k in my_kas if k["status"] == "Belum Lunas")
 
     c1, c2 = st.columns(2)
-    c1.markdown(f"""<div class="metric-card"><div class="metric-icon" style="background:#A7F3D0;">✅</div>
-        <div><div class="metric-label">Total Terbayar</div><div class="metric-value" style="color:#065F46;">Rp {total_lunas:,}</div></div></div>""", unsafe_allow_html=True)
-    c2.markdown(f"""<div class="metric-card"><div class="metric-icon" style="background:#FECACA;">⚠️</div>
-        <div><div class="metric-label">Belum Lunas</div><div class="metric-value" style="color:#991B1B;">Rp {total_belum:,}</div></div></div>""", unsafe_allow_html=True)
+    with c1:
+        html_block(f"""<div class="metric-card"><div class="metric-icon" style="background:#A7F3D0;">✅</div>
+        <div><div class="metric-label">Total Terbayar</div><div class="metric-value" style="color:#065F46;">Rp {total_lunas:,}</div></div></div>""")
+    with c2:
+        html_block(f"""<div class="metric-card"><div class="metric-icon" style="background:#FECACA;">⚠️</div>
+        <div><div class="metric-label">Belum Lunas</div><div class="metric-value" style="color:#991B1B;">Rp {total_belum:,}</div></div></div>""")
 
     st.markdown("<br>", unsafe_allow_html=True)
 

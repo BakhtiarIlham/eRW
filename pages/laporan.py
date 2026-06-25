@@ -2,7 +2,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
-from app import render_section_header, render_empty_state
+from app import render_section_header, render_empty_state, html_block
 from datetime import date
 
 
@@ -46,7 +46,7 @@ def render():
     st.markdown('<div class="card">', unsafe_allow_html=True)
     for l in filtered[::-1]:
         badge_cls = BADGE.get(l["status"], "badge-gray")
-        st.markdown(
+        html_block(
             f"""<div style="padding:12px 0; border-bottom:1px solid #F3F4F6;">
               <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div style="flex:1;">
@@ -61,8 +61,7 @@ def render():
                   {f"<div style='margin-top:6px; font-size:0.83rem; color:#059669; background:#ECFDF5; padding:4px 8px; border-radius:6px; display:inline-block;'>📝 {l['catatan']}</div>" if l.get('catatan') else ''}
                 </div>
               </div>
-            </div>""",
-            unsafe_allow_html=True,
+            </div>"""
         )
 
         # Action buttons

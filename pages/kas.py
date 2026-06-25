@@ -2,7 +2,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
-from app import render_section_header, render_empty_state
+from app import render_section_header, render_empty_state, html_block
 from datetime import date
 
 
@@ -21,24 +21,27 @@ def render():
     pending_ver = sum(1 for k in kas_list if k["status"] == "Menunggu Verifikasi")
 
     c1, c2, c3 = st.columns(3)
-    c1.markdown(
-        f"""<div class="metric-card">
+    with c1:
+        html_block(
+            f"""<div class="metric-card">
           <div class="metric-icon" style="background:#A7F3D0;">✅</div>
           <div><div class="metric-label">Total Terkumpul</div>
                <div class="metric-value" style="color:#065F46;">Rp {total_lunas:,}</div></div>
-        </div>""", unsafe_allow_html=True)
-    c2.markdown(
-        f"""<div class="metric-card">
+        </div>""")
+    with c2:
+        html_block(
+            f"""<div class="metric-card">
           <div class="metric-icon" style="background:#FECACA;">⚠️</div>
           <div><div class="metric-label">Belum Lunas</div>
                <div class="metric-value" style="color:#991B1B;">Rp {total_belum:,}</div></div>
-        </div>""", unsafe_allow_html=True)
-    c3.markdown(
-        f"""<div class="metric-card">
+        </div>""")
+    with c3:
+        html_block(
+            f"""<div class="metric-card">
           <div class="metric-icon" style="background:#FDE68A;">⏳</div>
           <div><div class="metric-label">Menunggu Verifikasi</div>
                <div class="metric-value" style="color:#92400E;">{pending_ver} orang</div></div>
-        </div>""", unsafe_allow_html=True)
+        </div>""")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -98,11 +101,10 @@ def render():
           <td><span class="badge {badge_cls}">{k['status']}</span></td>
         </tr>"""
 
-    st.markdown(
+    html_block(
         f"""<table class="styled-table"><thead><tr>
           <th>Nama Warga</th><th>Nominal</th><th>Tanggal</th><th>Status</th>
-        </tr></thead><tbody>{rows}</tbody></table>""",
-        unsafe_allow_html=True,
+        </tr></thead><tbody>{rows}</tbody></table>"""
     )
     st.markdown('</div>', unsafe_allow_html=True)
 

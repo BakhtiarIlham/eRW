@@ -313,6 +313,26 @@ def logout():
 
 
 # ── Komponen UI reusable (dipakai oleh semua halaman di folder pages/) ───────
+def html_block(content: str):
+    """Render HTML multi-baris dengan AMAN lewat st.markdown.
+
+    Streamlit (sejak versi >=1.46) memproses string lewat parser Markdown
+    sebelum HTML mentah ditampilkan. Markdown punya aturan: baris yang
+    diawali 4+ spasi/1 tab dianggap sebagai *code block*, bukan HTML biasa.
+    Karena banyak HTML di app ini ditulis multi-baris mengikuti indentasi
+    kode Python (umumnya 8-16 spasi per baris), baris-baris tersebut bisa
+    salah ditangkap sebagai code block dan tampil sebagai teks mentah
+    (lihat kotak hitam ala terminal di UI).
+
+    Fungsi ini menghapus indentasi di awal setiap baris sebelum dikirim ke
+    st.markdown(), sehingga tidak ada baris yang lagi dianggap code block.
+    Gunakan ini sebagai pengganti st.markdown(html, unsafe_allow_html=True)
+    untuk HTML yang ditulis multi-baris (banyak baris dengan \\n di antaranya).
+    """
+    cleaned = "\n".join(line.lstrip() for line in content.split("\n"))
+    st.markdown(cleaned, unsafe_allow_html=True)
+
+
 def render_section_header(title: str, subtitle: str = ""):
     """Header judul halaman yang konsisten di semua halaman."""
     sub_html = f'<div class="page-subtitle">{subtitle}</div>' if subtitle else ""
@@ -326,15 +346,14 @@ def render_empty_state(icon: str, title: str, subtitle: str = ""):
     """Tampilan kosong yang konsisten dipakai di semua daftar/tabel
     yang belum punya data, menggantikan campuran st.info() dan HTML ad-hoc."""
     sub_html = f'<div class="es-sub">{subtitle}</div>' if subtitle else ""
-    st.markdown(
+    html_block(
         f"""<div class="card">
           <div class="empty-state">
             <div class="es-icon">{icon}</div>
             <div class="es-title">{title}</div>
             {sub_html}
           </div>
-        </div>""",
-        unsafe_allow_html=True,
+        </div>"""
     )
 
 
@@ -433,7 +452,7 @@ def render_sidebar():
         </div>
     </div>
     """
-    st.markdown(sidebar_html, unsafe_allow_html=True)
+    html_block(sidebar_html)
     st.markdown("<br>", unsafe_allow_html=True)
 
     # Menu navigasi — item yang sedang aktif diberi class .nav-active agar
@@ -461,15 +480,14 @@ def render_header_logout():
     user = get_user()
     col_info, col_btn = st.columns([7, 1])
     with col_info:
-        st.markdown(
+        html_block(
             f"""<div class="logout-bar">
                   <span style="font-size:0.88rem; color:#374151;">
                     👤 <b style="color:#1E3A8A;">{user.get('nama','')}</b>
                     &nbsp;·&nbsp; {user.get('role','')}
                   </span>
                   <span style="font-size:0.78rem; color:#9CA3AF;">e-RW 🏘️</span>
-                </div>""",
-            unsafe_allow_html=True,
+                </div>"""
         )
     with col_btn:
         if st.button("🚪 Logout", use_container_width=True):
@@ -491,7 +509,7 @@ def render_header_logout():
 # ── Login page ─────────────────────────────────────────────────────────────────
 def render_login():
     inject_css()
-    st.markdown(
+    html_block(
         """
         <div class="login-container">
           <div class="login-logo">
@@ -500,8 +518,7 @@ def render_login():
             <p>Sistem Layanan Masyarakat Rukun Warga</p>
           </div>
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
     col_l, col_c, col_r = st.columns([1, 1.6, 1])
     with col_c:
@@ -519,7 +536,7 @@ def render_login():
             else:
                 st.error("Email atau password salah. Silakan coba lagi.")
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown(
+        html_block(
             """
             <div class="info-box">
               <b>Akun Demo:</b><br>
@@ -528,8 +545,7 @@ def render_login():
               🟠 Petugas &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ petugas@erw.id / petugas123<br>
               ⚪ Warga &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;→ warga@erw.id / warga123
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
 

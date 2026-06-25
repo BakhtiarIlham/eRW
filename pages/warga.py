@@ -135,13 +135,7 @@ def render():
     )
 
     st.markdown(
-        f"""
-        <div class="section-header">
-            <div class="section-title">
-                Daftar Warga ({len(warga_list)} orang)
-            </div>
-        </div>
-        """,
+        f'<div class="section-header"><div class="section-title">Daftar Warga ({len(warga_list)} orang)</div></div>',
         unsafe_allow_html=True
     )
 
@@ -175,10 +169,7 @@ def render():
         cols = st.columns([3, 3, 2, 2, 2, 1, 1, 1])
 
         cols[0].markdown(
-            f"""
-            <b>{w['nama']}</b><br>
-            <small>{w['nik']}</small>
-            """,
+            f"<b>{w['nama']}</b><br><small>{w['nik']}</small>",
             unsafe_allow_html=True
         )
 
@@ -186,20 +177,12 @@ def render():
         cols[2].write(w["no_hp"])
 
         cols[3].markdown(
-            f"""
-            <span class="badge {stat_cls}">
-                {w['status']}
-            </span>
-            """,
+            f'<span class="badge {stat_cls}">{w["status"]}</span>',
             unsafe_allow_html=True
         )
 
         cols[4].markdown(
-            f"""
-            <span class="badge {val_cls}">
-                {w['validasi']}
-            </span>
-            """,
+            f'<span class="badge {val_cls}">{w["validasi"]}</span>',
             unsafe_allow_html=True
         )
 

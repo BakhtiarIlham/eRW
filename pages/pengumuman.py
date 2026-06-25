@@ -2,7 +2,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
-from app import render_section_header, render_empty_state, confirm_delete_button
+from app import render_section_header, render_empty_state, confirm_delete_button, html_block
 from datetime import date
 
 
@@ -42,7 +42,7 @@ def render():
 
     for p in pengumuman:
         with st.container():
-            st.markdown(
+            html_block(
                 f"""<div class="card" style="border-left:4px solid #3B82F6;">
                   <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div>
@@ -53,8 +53,7 @@ def render():
                       <div style="color:#374151; font-size:0.88rem; line-height:1.6;">{p['isi']}</div>
                     </div>
                   </div>
-                </div>""",
-                unsafe_allow_html=True,
+                </div>"""
             )
             if role in ["Pengurus RW", "Pengurus RT"]:
                 col_d, col_sp = st.columns([1, 6])

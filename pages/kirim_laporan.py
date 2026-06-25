@@ -2,7 +2,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
-from app import render_section_header
+from app import render_section_header, html_block
 from datetime import date
 
 
@@ -33,24 +33,22 @@ def render():
     if uploaded_file is not None:
         size_kb = round(uploaded_file.size / 1024, 1)
         icon = "📄" if uploaded_file.type == "application/pdf" else "🖼️"
-        st.markdown(
+        html_block(
             f"""<div class="file-chip">
               <div class="fi">{icon}</div>
               <div>
                 <div class="fn">{uploaded_file.name}</div>
                 <div class="fs">{size_kb} KB · {uploaded_file.type}</div>
               </div>
-            </div>""",
-            unsafe_allow_html=True,
+            </div>"""
         )
         if uploaded_file.type in ["image/jpeg", "image/png"]:
             st.image(uploaded_file, caption="Pratinjau lampiran", width=260)
 
-    st.markdown(
+    html_block(
         """<div class="info-box">
           ℹ️ Laporan Anda akan diverifikasi oleh Pengurus RT/RW terlebih dahulu sebelum diteruskan ke Petugas Operasional.
-        </div>""",
-        unsafe_allow_html=True,
+        </div>"""
     )
 
     col_b, _ = st.columns([2, 4])

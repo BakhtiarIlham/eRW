@@ -2,7 +2,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import data_store as ds
-from app import render_section_header, render_empty_state
+from app import render_section_header, render_empty_state, html_block
 
 
 def render():
@@ -30,7 +30,7 @@ def render():
     for b in my_bansos:
         cls = "badge-green" if b["status"] == "Aktif" else "badge-gray"
         icon = {"PKH":"🏠","BPNT":"🛒","BLT":"💵","KIS":"🏥"}.get(b["jenis"],"🎁")
-        st.markdown(
+        html_block(
             f"""<div class="card" style="border-left:4px solid {'#10B981' if b['status']=='Aktif' else '#9CA3AF'};">
               <div style="display:flex; align-items:center; gap:1rem;">
                 <div style="font-size:2.5rem;">{icon}</div>
@@ -40,6 +40,5 @@ def render():
                   <div style="margin-top:8px;"><span class="badge {cls}">{b['status']}</span></div>
                 </div>
               </div>
-            </div>""",
-            unsafe_allow_html=True,
+            </div>"""
         )
